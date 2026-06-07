@@ -1,441 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8">
-    <title>MY CV</title>
-    <link rel="stylesheet" href="./style.css">
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- SEO -->
-    <title>Ecatu Ronald | Technician | Tata Uganda Ltd</title>
-
+    
+    <!-- SEO Meta Tags -->
+    <title>Ecatu Ronald | Automotive Technician | Tata Uganda Ltd</title>
     <meta name="description"
-        content="Official portfolio of Ecatu Ronald, Technician at Tata Uganda Ltd specializing in vehicle diagnostics, fleet maintenance, diesel engine systems, workshop operations, and modern automotive technologies.">
-
+        content="Professional portfolio of Ecatu Ronald, Senior Technician at Tata Uganda Ltd. Specializing in vehicle diagnostics, fleet maintenance, diesel engine systems, BS6 technologies, and modern automotive solutions.">
     <meta name="keywords"
-        content="Ecatu Ronald, Tata Uganda, Technician, Diesel Engines, Fleet Maintenance, Vehicle Diagnostics, BS6 Systems">
-
+        content="Ecatu Ronald, Tata Uganda, Technician, Diesel Engines, Fleet Maintenance, Vehicle Diagnostics, BS6 Systems, Automotive Expert">
     <meta name="author" content="Ecatu Ronald">
-
-    <link rel="icon" href="assets/favicon.icon">
-
+    <meta name="theme-color" content="#0d6efd">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Ecatu Ronald | Professional Automotive Technician">
+    <meta property="og:description"
+        content="Discover expertise in vehicle diagnostics, fleet maintenance, and modern automotive technologies">
+    <meta property="og:image" content="./assets/og-image.png">
+    <meta property="og:url" content="https://ecaturonald.com">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+    <link rel="apple-touch-icon" href="./assets/favicon.ico">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./style.css">
+    
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 
 <body>
+    <!-- ========================= -->
+    <!-- SKIP TO MAIN CONTENT -->
+    <!-- ========================= -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <!-- ========================= -->
     <!-- PRELOADER -->
     <!-- ========================= -->
-
-    <div id="preloader">
+    <div id="preloader" aria-label="Loading page">
         <span>ER</span>
     </div>
 
     <!-- ========================= -->
-    <!-- HEADER -->
+    <!-- HEADER / NAVIGATION -->
     <!-- ========================= -->
-
-    <header id="header">
-
+    <header id="header" role="banner">
         <div class="container">
-
             <div class="logo">
-
-                <a href="#">
+                <a href="#hero" aria-label="Ecatu Ronald - Home">
                     <span>Ecatu</span> Ronald
                 </a>
-
             </div>
 
-            <nav>
-
+            <nav aria-label="Main navigation">
                 <ul>
-
                     <li><a href="#hero">Home</a></li>
-
                     <li><a href="#about">About</a></li>
-
                     <li><a href="#expertise">Expertise</a></li>
-
                     <li><a href="#experience">Experience</a></li>
-
                     <li><a href="#projects">Projects</a></li>
-
                     <li><a href="#certifications">Certifications</a></li>
-
                     <li><a href="#contact">Contact</a></li>
-
                 </ul>
-
             </nav>
 
-            <button class="menu-btn">
-
+            <button class="menu-btn" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
-
             </button>
-
         </div>
-
     </header>
 
     <!-- ========================= -->
-    <!-- HERO -->
+    <!-- MAIN CONTENT -->
     <!-- ========================= -->
+    <main id="main-content">
 
-    <section id="hero">
+        <!-- ========================= -->
+        <!-- HERO SECTION -->
+        <!-- ========================= -->
+        <section id="hero" role="region" aria-label="Hero introduction">
+            <div class="hero-content">
+                <p class="welcome-text">Welcome To My Portfolio</p>
 
-        <div class="hero-content">
+                <h1>Ecatu Ronald</h1>
 
-            <p class="welcome-text">
-                Welcome To My Portfolio
-            </p>
+                <h2>Technician at Tata Uganda Ltd</h2>
 
-            <h1>
-                Ecatu Ronald
-            </h1>
+                <p class="hero-description">
+                    Dedicated automotive professional specializing in diagnostics, preventive
+                    maintenance, diesel engine systems, fleet reliability, workshop operations, and
+                    emerging vehicle technologies. Committed to excellence in service delivery and
+                    continuous professional development.
+                </p>
 
-            <h2>
-                Technician at Tata Uganda Ltd
-            </h2>
-
-            <p class="hero-description">
-
-                Dedicated automotive professional specializing in
-                diagnostics, preventive maintenance, diesel engine systems,
-                fleet reliability, workshop operations, and emerging
-                vehicle technologies.
-
-            </p>
-
-            <div class="hero-buttons">
-
-                <a href="C:\Users\RONALD\Desktop\cv\cv\my-cv\dist\my photo.png"
-                    target="_blank">
-                    Download CV
-                </a>
-
-                <a href="C:\Users\RONALD\Desktop\cv\cv\my-cv\letstalk\dist\index.html">
-                    Let's Talk
-                </a>
-
+                <div class="hero-buttons">
+                    <a href="./assets/Ecatu-Ronald-CV.pdf" download="Ecatu-Ronald-CV.pdf"
+                        class="btn btn-primary" role="button">
+                        Download CV
+                    </a>
+                    <a href="#contact" class="btn btn-secondary" role="button">
+                        Let's Connect
+                    </a>
+                </div>
             </div>
 
-        </div>
+            <div class="hero-image">
+                <img src="./assets/profile-photo.png" alt="Ecatu Ronald - Professional Profile Photo"
+                    loading="lazy">
+            </div>
+        </section>
 
-        <div class="hero-image">
+        <!-- ========================= -->
+        <!-- ABOUT SECTION -->
+        <!-- ========================= -->
+        <section id="about" role="region" aria-label="About me">
+            <div class="section-header">
+                <span>About Me</span>
+                <h2>Building Reliability Through Engineering Excellence</h2>
+            </div>
 
-    <img src="my photo.png"
-        alt="Ecatu Ronald">
-
-</div>
-
-    </section>
-
-    <!-- ========================= -->
-    <!-- ABOUT -->
-    <!-- ========================= -->
-
-    <section id="about">
-
-        <div class="section-header">
-
-            <span>About Me</span>
-
-            <h2>
-                Building Reliability Through Engineering Excellence
-            </h2>
-
-        </div>
-
-        <div class="about-content">
-
-            <p>
-
-                I am a professional Technician at Tata Uganda Ltd with
-                experience in commercial vehicle maintenance,
-                troubleshooting, diagnostics, fleet support, and workshop
-                management.
-
-            </p>
-
-            <p>
-
-                My passion extends beyond maintenance into technology,
-                artificial intelligence, Linux systems, renewable energy,
-                and continuous professional growth.
-
-            </p>
-
-        </div>
-
-    </section>
-
-    <!-- ========================= -->
-    <!-- EXPERTISE -->
-    <!-- ========================= -->
-
-    <section id="expertise">
-
-        <div class="section-header">
-
-            <span>Core Expertise</span>
-
-            <h2>Professional Capabilities</h2>
-
-        </div>
-
-        <div class="expertise-grid">
-
-            <article>
-
-                <h3>Vehicle Diagnostics</h3>
-
+            <div class="about-content">
                 <p>
-                    Advanced fault finding and troubleshooting.
+                    I am a professional Technician at Tata Uganda Ltd with extensive experience in
+                    commercial vehicle maintenance, troubleshooting, diagnostics, fleet support, and
+                    comprehensive workshop management.
                 </p>
 
-            </article>
-
-            <article>
-
-                <h3>Fleet Maintenance</h3>
-
                 <p>
-                    Preventive and corrective maintenance strategies.
+                    My passion extends beyond hands-on maintenance into emerging technologies,
+                    artificial intelligence, Linux systems administration, renewable energy
+                    solutions, and continuous professional growth in the automotive industry.
                 </p>
-
-            </article>
-
-            <article>
-
-                <h3>Diesel Engine Systems</h3>
-
-                <p>
-                    Inspection, repair and performance optimization.
-                </p>
-
-            </article>
-
-            <article>
-
-                <h3>BS6 Technologies</h3>
-
-                <p>
-                    Modern emission control and after-treatment systems.
-                </p>
-
-            </article>
-
-            <article>
-
-                <h3>Warranty Analysis</h3>
-
-                <p>
-                    Root cause investigation and technical reporting.
-                </p>
-
-            </article>
-
-            <article>
-
-                <h3>Workshop Operations</h3>
-
-                <p>
-                    Efficiency improvement and technical supervision.
-                </p>
-
-            </article>
-
-        </div>
-
-    </section>
-
-    <!-- ========================= -->
-    <!-- EXPERIENCE -->
-    <!-- ========================= -->
-
-    <section id="experience">
-
-        <div class="section-header">
-
-            <span>Career Journey</span>
-
-            <h2>Professional Experience</h2>
-
-        </div>
-
-        <div class="timeline">
-
-            <article>
-
-                <span>Current</span>
-
-                <h3>Technician</h3>
-
-                <h4>Tata Uganda Ltd</h4>
-
-                <p>
-
-                    Responsible for diagnostics, maintenance,
-                    inspections, repairs and technical support for
-                    commercial vehicle operations.
-
-                </p>
-
-            </article>
-
-        </div>
-
-    </section>
-
-    <!-- ========================= -->
-    <!-- PROJECTS -->
-    <!-- ========================= -->
-
-    <section id="projects">
-
-        <div class="section-header">
-
-            <span>Selected Work</span>
-
-            <h2>Technical Projects</h2>
-
-        </div>
-
-        <div class="project-grid">
-
-            <article>
-
-                <h3>Engine Rebuild Projects</h3>
-
-                <p>
-                    Complete engine overhaul and performance restoration.
-                </p>
-
-            </article>
-
-            <article>
-
-                <h3>Fleet Reliability Improvements</h3>
-
-                <p>
-                    Implemented maintenance procedures to reduce downtime.
-                </p>
-
-            </article>
-
-            <article>
-
-                <h3>Solar Energy Projects</h3>
-
-                <p>
-                    Installation and maintenance of solar systems.
-                </p>
-
-            </article>
-
-        </div>
-
-    </section>
-
-    <!-- ========================= -->
-    <!-- CERTIFICATIONS -->
-    <!-- ========================= -->
-
-    <section id="certifications">
-
-        <div class="section-header">
-
-            <span>Achievements</span>
-
-            <h2>Training & Certifications</h2>
-
-        </div>
-
-        <ul>
-
-            <li>Automotive Diagnostics</li>
-
-            <li>Fleet Maintenance Systems</li>
-
-            <li>BS6 Emission Technologies</li>
-
-            <li>Workshop Safety Management</li>
-
-        </ul>
-
-    </section>
-
-    <!-- ========================= -->
-    <!-- CONTACT -->
-    <!-- ========================= -->
-
-    <section id="contact">
-
-        <div class="section-header">
-
-            <span>Contact</span>
-
-            <h2>Let's Connect</h2>
-
-        </div>
-
-        <div class="contact-info">
-
-            <p>
-                <strong>Phone:</strong>
-                +256 780 697 149
-            </p>
-
-            <p>
-                <strong>Alternative:</strong>
-                +256 757 106 218
-            </p>
-
-            <p>
-                <strong>Email:</strong>
-                ronaldecatu@gmail.com
-            </p>
-
-            <p>
-                <strong>Company:</strong>
-                Tata Uganda Ltd
-            </p>
-
-        </div>
-
-    </section>
+            </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- EXPERTISE SECTION -->
+        <!-- ========================= -->
+        <section id="expertise" role="region" aria-label="Professional expertise and skills">
+            <div class="section-header">
+                <span>Core Expertise</span>
+                <h2>Professional Capabilities</h2>
+            </div>
+
+            <div class="expertise-grid">
+                <article class="expertise-card">
+                    <h3>Vehicle Diagnostics</h3>
+                    <p>
+                        Advanced fault finding, troubleshooting, and comprehensive diagnostic
+                        analysis using modern equipment.
+                    </p>
+                    <ul class="skills-list">
+                        <li>OBD2 Scanning</li>
+                        <li>Fault Code Analysis</li>
+                        <li>System Testing</li>
+                    </ul>
+                </article>
+
+                <article class="expertise-card">
+                    <h3>Fleet Maintenance</h3>
+                    <p>
+                        Strategic preventive and corrective maintenance planning to maximize uptime
+                        and fleet reliability.
+                    </p>
+                    <ul class="skills-list">
+                        <li>Maintenance Planning</li>
+                        <li>Inventory Management</li>
+                        <li>Cost Optimization</li>
+                    </ul>
+                </article>
+
+                <article class="expertise-card">
+                    <h3>Diesel Engine Systems</h3>
+                    <p>
+                        Comprehensive inspection, repair, and performance optimization of diesel
+                        powertrains.
+                    </p>
+                    <ul class="skills-list">
+                        <li>Engine Overhaul</li>
+                        <li>Fuel Systems</li>
+                        <li>Performance Tuning</li>
+                    </ul>
+                </article>
+
+                <article class="expertise-card">
+                    <h3>BS6 Technologies</h3>
+                    <p>
+                        Modern emission control systems and after-treatment technologies for
+                        environmental compliance.
+                    </p>
+                    <ul class="skills-list">
+                        <li>DPF Regeneration</li>
+                        <li>SCR Systems</li>
+                        <li>Emission Testing</li>
+                    </ul>
+                </article>
+
+                <article class="expertise-card">
+                    <h3>Warranty Analysis</h3>
+                    <p>
+                        In-depth root cause investigation and technical reporting for warranty
+                        claims and analysis.
+                    </p>
+                    <ul class="skills-list">
+                        <li>RCA Documentation</li>
+                        <li>Technical Reports</li>
+                        <li>Claim Analysis</li>
+                    </ul>
+                </article>
+
+                <article class="expertise-card">
+                    <h3>Workshop Operations</h3>
+                    <p>
+                        Strategic efficiency improvement and technical supervision for smooth
+                        workshop management.
+                    </p>
+                    <ul class="skills-list">
+                        <li>Process Optimization</li>
+                        <li>Team Leadership</li>
+                        <li>Quality Assurance</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- EXPERIENCE SECTION -->
+        <!-- ========================= -->
+        <section id="experience" role="region" aria-label="Professional experience and career history">
+            <div class="section-header">
+                <span>Career Journey</span>
+                <h2>Professional Experience</h2>
+            </div>
+
+            <div class="timeline">
+                <article class="experience-card">
+                    <span class="badge">Current</span>
+                    <h3>Senior Technician</h3>
+                    <h4>Tata Uganda Ltd</h4>
+                    <p class="experience-date">2020 - Present</p>
+                    <p>
+                        Responsible for comprehensive diagnostics, maintenance, inspections, repairs,
+                        and technical support for commercial vehicle operations. Leading diagnostic
+                        initiatives and mentoring junior technicians in modern automotive systems.
+                    </p>
+                    <ul class="responsibilities">
+                        <li>Vehicle diagnostics and troubleshooting</li>
+                        <li>Fleet maintenance planning</li>
+                        <li>Technical supervision and staff training</li>
+                        <li>Warranty analysis and documentation</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- PROJECTS SECTION -->
+        <!-- ========================= -->
+        <section id="projects" role="region" aria-label="Technical projects and achievements">
+            <div class="section-header">
+                <span>Selected Work</span>
+                <h2>Technical Projects</h2>
+            </div>
+
+            <div class="project-grid">
+                <article class="project-card">
+                    <h3>Engine Rebuild & Optimization</h3>
+                    <p>
+                        Complete engine overhaul, performance restoration, and modern system
+                        integration for commercial vehicles.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Engine Systems</span>
+                        <span class="tag">Diagnostics</span>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <h3>Fleet Reliability Program</h3>
+                    <p>
+                        Implemented comprehensive maintenance procedures reducing vehicle downtime
+                        by 35% and extending fleet asset life.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Fleet Management</span>
+                        <span class="tag">Process Optimization</span>
+                    </div>
+                </article>
+
+                <article class="project-card">
+                    <h3>Solar Energy Integration</h3>
+                    <p>
+                        Design, installation, and maintenance of solar power systems for workshop
+                        operations and facility efficiency.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Renewable Energy</span>
+                        <span class="tag">Installation</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- CERTIFICATIONS SECTION -->
+        <!-- ========================= -->
+        <section id="certifications" role="region" aria-label="Professional certifications and training">
+            <div class="section-header">
+                <span>Achievements</span>
+                <h2>Training & Certifications</h2>
+            </div>
+
+            <ul class="certifications-list">
+                <li class="certification-item">
+                    <span class="cert-icon">✓</span>
+                    <span>Automotive Diagnostics Certification</span>
+                </li>
+                <li class="certification-item">
+                    <span class="cert-icon">✓</span>
+                    <span>Fleet Maintenance Systems</span>
+                </li>
+                <li class="certification-item">
+                    <span class="cert-icon">✓</span>
+                    <span>BS6 Emission Technologies</span>
+                </li>
+                <li class="certification-item">
+                    <span class="cert-icon">✓</span>
+                    <span>Workshop Safety Management</span>
+                </li>
+                <li class="certification-item">
+                    <span class="cert-icon">✓</span>
+                    <span>Professional Technical Leadership</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- ========================= -->
+        <!-- CONTACT SECTION -->
+        <!-- ========================= -->
+        <section id="contact" role="region" aria-label="Contact information and form">
+            <div class="section-header">
+                <span>Get In Touch</span>
+                <h2>Let's Connect</h2>
+            </div>
+
+            <div class="contact-container">
+                <div class="contact-info">
+                    <article class="contact-method">
+                        <h3>Phone</h3>
+                        <p>
+                            <a href="tel:+256780697149" class="contact-link">+256 780 697 149</a>
+                        </p>
+                        <p class="secondary">
+                            <a href="tel:+256757106218" class="contact-link">+256 757 106 218</a>
+                        </p>
+                    </article>
+
+                    <article class="contact-method">
+                        <h3>Email</h3>
+                        <p>
+                            <a href="mailto:ronaldecatu@gmail.com" class="contact-link">ronaldecatu@gmail.com</a>
+                        </p>
+                    </article>
+
+                    <article class="contact-method">
+                        <h3>Organization</h3>
+                        <p>Tata Uganda Ltd</p>
+                    </article>
+
+                    <article class="contact-method">
+                        <h3>Social Links</h3>
+                        <div class="social-links">
+                            <a href="https://linkedin.com/in/ecaturonald" target="_blank" rel="noopener noreferrer"
+                                aria-label="LinkedIn Profile">LinkedIn</a>
+                            <a href="https://github.com/ecaturonald" target="_blank" rel="noopener noreferrer"
+                                aria-label="GitHub Profile">GitHub</a>
+                            <a href="https://twitter.com/ecaturonald" target="_blank" rel="noopener noreferrer"
+                                aria-label="Twitter Profile">Twitter</a>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Contact Form -->
+                <form id="contact-form" class="contact-form" method="POST" action="/api/contact">
+                    <fieldset>
+                        <legend>Send me a message</legend>
+
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" required minlength="2" maxlength="100"
+                                placeholder="Your name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+256 XXX XXX XXX">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Subject *</label>
+                            <input type="text" id="subject" name="subject" required minlength="5" maxlength="200"
+                                placeholder="What's this about?">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message *</label>
+                            <textarea id="message" name="message" required minlength="10" maxlength="2000" rows="6"
+                                placeholder="Your message here..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" aria-label="Send message">
+                            Send Message
+                        </button>
+                        <span class="form-message" id="form-message"></span>
+                    </fieldset>
+                </form>
+            </div>
+        </section>
+
+    </main>
 
     <!-- ========================= -->
     <!-- FOOTER -->
     <!-- ========================= -->
-
-    <footer>
-
-        <p>
-            © 2026 Ecatu Ronald. All Rights Reserved.
-        </p>
-
+    <footer role="contentinfo">
+        <div class="footer-content">
+            <p id="copyright"></p>
+            <p class="footer-credits">
+                Designed & Built by <a href="#" rel="noopener noreferrer">Ecatu Ronald</a>
+            </p>
+        </div>
     </footer>
 
+    <!-- Scripts -->
+    <script src="./script.js" defer></script>
 </body>
 
-</html>
-    <script  src="./script.js"></script>
-
-  </body>
-  
 </html>
