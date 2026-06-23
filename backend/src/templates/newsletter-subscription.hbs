@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter Subscription Confirmed</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0f172a; color: #e2e8f0; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #059669, #0891b2); padding: 40px 30px; border-radius: 12px 12px 0 0; text-align: center; }
+    .header h1 { color: #ffffff; font-size: 28px; }
+    .header p { color: #a7f3d0; margin-top: 8px; }
+    .body { background-color: #1e293b; padding: 40px 30px; border-radius: 0 0 12px 12px; }
+    .greeting { font-size: 20px; font-weight: 600; color: #f1f5f9; margin-bottom: 16px; }
+    .message { color: #94a3b8; line-height: 1.7; margin-bottom: 24px; }
+    .benefits { background-color: #0f172a; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+    .benefit { display: flex; align-items: center; margin-bottom: 12px; color: #94a3b8; }
+    .benefit::before { content: "✓"; color: #10b981; margin-right: 10px; font-weight: bold; }
+    .cta-button { display: inline-block; background: linear-gradient(135deg, #059669, #0891b2); color: #ffffff !important; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #475569; font-size: 12px; }
+    .footer a { color: #64748b; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 You're Subscribed!</h1>
+      <p>Welcome to my newsletter, {{name}}</p>
+    </div>
+    <div class="body">
+      <p class="greeting">Hi {{name}},</p>
+      <p class="message">You've successfully subscribed to my newsletter. I'm thrilled to have you onboard!</p>
+      <div class="benefits">
+        <div class="benefit">Latest blog posts on automotive technology</div>
+        <div class="benefit">Tips on vehicle maintenance and diagnostics</div>
+        <div class="benefit">Updates on my projects and achievements</div>
+        <div class="benefit">Insights on emerging vehicle technologies</div>
+      </div>
+      <a href="{{siteUrl}}" class="cta-button">Explore My Portfolio</a>
+      <div class="footer">
+        <p>© {{year}} Ecatu Ronald. All rights reserved.</p>
+        <p style="margin-top:8px"><a href="{{unsubscribeUrl}}">Unsubscribe</a> | <a href="mailto:ronaldecatu@gmail.com">Contact</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
