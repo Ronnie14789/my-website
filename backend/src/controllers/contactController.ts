@@ -91,17 +91,27 @@ export async function submitContact(req: Request, res: Response): Promise<void> 
  */
 export async function getSubmissions(req: Request, res: Response): Promise<void> {
   try {
-    const { status, page = 1, limit = 20 } = req.query;
+    const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
+    type SubmissionStatus = (typeof VALID_STATUSES)[number];
+
+    const statusParam = typeof req.query.status === 'string' ? req.query.status : undefined;
+    const status = VALID_STATUSES.includes(statusParam as SubmissionStatus)
+      ? (statusParam as SubmissionStatus)
+      : undefined;
+
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
+
     const filter: Record<string, unknown> = {};
     if (status) filter.status = status;
 
-    const skip = (Number(page) - 1) * Number(limit);
+    const skip = (page - 1) * limit;
 
     const [submissions, total] = await Promise.all([
       ContactSubmission.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit)),
+        .limit(limit),
       ContactSubmission.countDocuments(filter),
     ]);
 
@@ -112,8 +122,8 @@ export async function getSubmissions(req: Request, res: Response): Promise<void>
         submissions,
         pagination: {
           total,
-          page: Number(page),
-          pages: Math.ceil(total / Number(limit)),
+          page,
+          pages: Math.ceil(total / limit),
         },
       },
     });

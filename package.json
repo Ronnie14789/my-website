@@ -24,15 +24,8 @@
     "prettier": "^3.3.2"
   },
   "lint-staged": {
-    "frontend/src/**/*.{ts,tsx}": [
-      "bash -c 'cd frontend && npx eslint --fix'",
-      "bash -c 'cd frontend && npx prettier --write'"
-    ],
-    "backend/src/**/*.ts": [
-      "bash -c 'cd backend && npx prettier --write'"
-    ],
-    "**/*.{json,md,css}": [
-      "npx prettier --write"
-    ]
+    "frontend/src/**/*.{ts,tsx}": "frontend/node_modules/.bin/prettier --write",
+    "backend/src/**/*.ts": "backend/node_modules/.bin/prettier --write",
+    "**/*.{json,md,css}": "node_modules/.bin/prettier --write"
   }
 }

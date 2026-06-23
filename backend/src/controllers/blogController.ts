@@ -27,24 +27,27 @@ import logger from '../utils/logger';
  */
 export async function getPosts(req: Request, res: Response): Promise<void> {
   try {
-    const { tag, page = 1, limit = 10 } = req.query;
+    const tag = typeof req.query.tag === 'string' ? req.query.tag.trim() : undefined;
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 10));
+
     const filter: Record<string, unknown> = { published: true };
     if (tag) filter.tags = tag;
 
-    const skip = (Number(page) - 1) * Number(limit);
+    const skip = (page - 1) * limit;
 
     const [posts, total] = await Promise.all([
       BlogPost.find(filter, '-content')
         .sort({ publishedAt: -1 })
         .skip(skip)
-        .limit(Number(limit)),
+        .limit(limit),
       BlogPost.countDocuments(filter),
     ]);
 
     res.json({
       success: true,
       message: 'Posts fetched',
-      data: { posts, pagination: { total, page: Number(page), pages: Math.ceil(total / Number(limit)) } },
+      data: { posts, pagination: { total, page, pages: Math.ceil(total / limit) } },
     });
   } catch (error) {
     logger.error('Get posts error:', error);

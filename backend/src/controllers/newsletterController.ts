@@ -31,9 +31,14 @@ import logger from '../utils/logger';
  */
 export async function subscribe(req: Request, res: Response): Promise<void> {
   try {
-    const { email } = req.body;
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
 
-    const existing = await NewsletterSubscription.findOne({ email });
+    if (!email) {
+      res.status(400).json({ success: false, message: 'Valid email is required' });
+      return;
+    }
+
+    const existing = await NewsletterSubscription.findOne({ email: { $eq: email } });
 
     if (existing) {
       if (existing.active) {
@@ -85,8 +90,14 @@ export async function subscribe(req: Request, res: Response): Promise<void> {
  */
 export async function unsubscribe(req: Request, res: Response): Promise<void> {
   try {
-    const { email } = req.body;
-    const subscription = await NewsletterSubscription.findOne({ email });
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+
+    if (!email) {
+      res.status(400).json({ success: false, message: 'Valid email is required' });
+      return;
+    }
+
+    const subscription = await NewsletterSubscription.findOne({ email: { $eq: email } });
 
     if (!subscription || !subscription.active) {
       res.json({ success: true, message: 'Email not found in our list.' });
