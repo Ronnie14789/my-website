@@ -1,13 +1,14 @@
 import { useState, type FormEvent } from 'react';
 import { contactApi } from '../../api/endpoints';
 import type { ContactFormData } from '../../types';
+import { useToast } from '../../contexts/ToastContext';
 
 const INITIAL: ContactFormData = { name: '', email: '', phone: '', subject: '', message: '' };
 
 export default function Contact() {
   const [form, setForm] = useState<ContactFormData>(INITIAL);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
+  const { showToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -20,9 +21,10 @@ export default function Contact() {
       await contactApi.submit(form);
       setStatus('success');
       setForm(INITIAL);
+      showToast("Message sent successfully. I'll get back to you soon.", 'success');
     } catch {
       setStatus('error');
-      setErrorMsg('Something went wrong. Please try again or email me directly.');
+      showToast('Something went wrong. Please try again or email me directly.', 'error');
     }
   };
 
@@ -38,13 +40,25 @@ export default function Contact() {
         <div className="contact-info reveal">
           <article className="contact-method">
             <h3>Phone</h3>
-            <p><a href="tel:+256780697149" className="contact-link">+256 780 697 149</a></p>
-            <p className="secondary"><a href="tel:+256757106218" className="contact-link">+256 757 106 218</a></p>
+            <p>
+              <a href="tel:+256780697149" className="contact-link">
+                +256 780 697 149
+              </a>
+            </p>
+            <p className="secondary">
+              <a href="tel:+256757106218" className="contact-link">
+                +256 757 106 218
+              </a>
+            </p>
           </article>
 
           <article className="contact-method">
             <h3>Email</h3>
-            <p><a href="mailto:ronaldecatu@gmail.com" className="contact-link">ronaldecatu@gmail.com</a></p>
+            <p>
+              <a href="mailto:ronaldecatu@gmail.com" className="contact-link">
+                ronaldecatu@gmail.com
+              </a>
+            </p>
           </article>
 
           <article className="contact-method">
@@ -55,9 +69,30 @@ export default function Contact() {
           <article className="contact-method">
             <h3>Social Links</h3>
             <div className="social-links">
-              <a href="https://linkedin.com/in/ecaturonald" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">LinkedIn</a>
-              <a href="https://github.com/ecaturonald" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">GitHub</a>
-              <a href="https://twitter.com/ecaturonald" target="_blank" rel="noopener noreferrer" aria-label="Twitter Profile">Twitter</a>
+              <a
+                href="https://linkedin.com/in/ecaturonald"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn Profile"
+              >
+                LinkedIn
+              </a>
+              <a
+                href="https://github.com/ecaturonald"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub Profile"
+              >
+                GitHub
+              </a>
+              <a
+                href="https://twitter.com/ecaturonald"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter Profile"
+              >
+                Twitter
+              </a>
             </div>
           </article>
         </div>
@@ -69,32 +104,72 @@ export default function Contact() {
 
             <div className="form-group">
               <label htmlFor="name">Full Name *</label>
-              <input type="text" id="name" name="name" required minLength={2} maxLength={100}
-                placeholder="Your name" value={form.name} onChange={handleChange} />
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                minLength={2}
+                maxLength={100}
+                placeholder="Your name"
+                value={form.name}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-group">
               <label htmlFor="email">Email Address *</label>
-              <input type="email" id="email" name="email" required
-                placeholder="your.email@example.com" value={form.email} onChange={handleChange} />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="your.email@example.com"
+                value={form.email}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-group">
               <label htmlFor="phone">Phone Number</label>
-              <input type="tel" id="phone" name="phone" placeholder="+256 XXX XXX XXX"
-                value={form.phone} onChange={handleChange} />
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="+256 XXX XXX XXX"
+                value={form.phone}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-group">
               <label htmlFor="subject">Subject *</label>
-              <input type="text" id="subject" name="subject" required minLength={5} maxLength={200}
-                placeholder="What's this about?" value={form.subject} onChange={handleChange} />
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                required
+                minLength={5}
+                maxLength={200}
+                placeholder="What's this about?"
+                value={form.subject}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-group">
               <label htmlFor="message">Message *</label>
-              <textarea id="message" name="message" required minLength={10} maxLength={2000}
-                rows={6} placeholder="Your message here..." value={form.message} onChange={handleChange} />
+              <textarea
+                id="message"
+                name="message"
+                required
+                minLength={10}
+                maxLength={2000}
+                rows={6}
+                placeholder="Your message here..."
+                value={form.message}
+                onChange={handleChange}
+              />
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={status === 'loading'}>
@@ -102,13 +177,11 @@ export default function Contact() {
             </button>
 
             {status === 'success' && (
-              <p className="form-message form-message-success" style={{ display: 'block' }}>
-                ✓ Message sent successfully! I&apos;ll get back to you soon.
-              </p>
+              <p className="form-message form-message-success">✓ Message sent successfully!</p>
             )}
             {status === 'error' && (
-              <p className="form-message form-message-error" style={{ display: 'block' }}>
-                {errorMsg}
+              <p className="form-message form-message-error">
+                Please review your details and try again.
               </p>
             )}
           </fieldset>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const NAV_LINKS = [
   { href: '#hero', label: 'Home' },
@@ -14,6 +15,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState('hero');
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const onScroll = () => {
@@ -57,8 +59,22 @@ export default function Header() {
                 </a>
               </li>
             ))}
+            <li>
+              <a href="/admin/login" onClick={closeMenu}>
+                Admin
+              </a>
+            </li>
           </ul>
         </nav>
+
+        <button
+          className="theme-toggle"
+          type="button"
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
 
         <button
           className="menu-btn"

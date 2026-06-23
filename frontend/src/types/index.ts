@@ -13,6 +13,50 @@ export interface ApiResponse<T = unknown> {
   errors?: string[];
 }
 
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  pages: number;
+}
+
+export interface AdminUser {
+  email: string;
+  role: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: AdminUser;
+}
+
+export interface AdminOverview {
+  contacts: number;
+  unreadContacts: number;
+  activeSubscribers: number;
+  blogPosts: number;
+  activeProjects: number;
+  approvedTestimonials: number;
+}
+
+export interface ContactSubmission {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  status: 'new' | 'read' | 'replied' | 'archived';
+  createdAt: string;
+}
+
+export interface NewsletterSubscriber {
+  _id: string;
+  email: string;
+  active: boolean;
+  subscribedAt: string;
+  unsubscribedAt?: string;
+}
+
 export interface Project {
   _id: string;
   title: string;
@@ -22,6 +66,8 @@ export interface Project {
   liveUrl?: string;
   githubUrl?: string;
   featured: boolean;
+  order?: number;
+  status?: 'active' | 'completed' | 'archived';
   createdAt: string;
 }
 
@@ -31,9 +77,11 @@ export interface BlogPost {
   slug: string;
   excerpt: string;
   content: string;
+  coverImage?: string;
   tags: string[];
   published: boolean;
   publishedAt?: string;
+  views?: number;
   createdAt: string;
 }
 

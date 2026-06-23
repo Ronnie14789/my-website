@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import ContactSubmission from '../models/ContactSubmission';
 import logger from '../utils/logger';
+import { sanitizeOptionalString, sanitizeString } from '../utils/sanitize';
+
+const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
+type SubmissionStatus = (typeof VALID_STATUSES)[number];
 
 /**
  * @swagger
@@ -40,11 +44,11 @@ export async function submitContact(req: Request, res: Response): Promise<void> 
     const { name, email, phone, subject, message } = req.body;
 
     const submission = await ContactSubmission.create({
-      name,
-      email,
-      phone,
-      subject,
-      message,
+      name: sanitizeString(String(name)),
+      email: sanitizeString(String(email)).toLowerCase(),
+      phone: sanitizeOptionalString(phone),
+      subject: sanitizeString(String(subject)),
+      message: sanitizeString(String(message)),
       ipAddress: req.ip,
     });
 
@@ -91,9 +95,6 @@ export async function submitContact(req: Request, res: Response): Promise<void> 
  */
 export async function getSubmissions(req: Request, res: Response): Promise<void> {
   try {
-    const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
-    type SubmissionStatus = (typeof VALID_STATUSES)[number];
-
     const statusParam = typeof req.query.status === 'string' ? req.query.status : undefined;
     const status = VALID_STATUSES.includes(statusParam as SubmissionStatus)
       ? (statusParam as SubmissionStatus)
@@ -108,10 +109,7 @@ export async function getSubmissions(req: Request, res: Response): Promise<void>
     const skip = (page - 1) * limit;
 
     const [submissions, total] = await Promise.all([
-      ContactSubmission.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
+      ContactSubmission.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
       ContactSubmission.countDocuments(filter),
     ]);
 
@@ -130,5 +128,66 @@ export async function getSubmissions(req: Request, res: Response): Promise<void>
   } catch (error) {
     logger.error('Get submissions error:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch submissions' });
+  }
+}
+
+export async function updateSubmissionStatus(req: Request, res: Response): Promise<void> {
+  try {
+    const status = typeof req.body.status === 'string' ? req.body.status : '';
+
+    if (!VALID_STATUSES.includes(status as SubmissionStatus)) {
+      res.status(400).json({ success: false, message: 'Invalid submission status.' });
+      return;
+    }
+
+    const submission = await ContactSubmission.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true },
+    );
+
+    if (!submission) {
+      res.status(404).json({ success: false, message: 'Submission not found.' });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: 'Submission updated.',
+      data: submission,
+    });
+  } catch (error) {
+    logger.error('Update submission status error:', error);
+    res.status(500).json({ success: false, message: 'Failed to update submission.' });
+  }
+}
+
+export async function bulkUpdateSubmissionStatus(req: Request, res: Response): Promise<void> {
+  try {
+    const { ids, status } = req.body as { ids?: string[]; status?: string };
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      res.status(400).json({ success: false, message: 'At least one submission id is required.' });
+      return;
+    }
+
+    if (!VALID_STATUSES.includes(status as SubmissionStatus)) {
+      res.status(400).json({ success: false, message: 'Invalid submission status.' });
+      return;
+    }
+
+    const result = await ContactSubmission.updateMany({ _id: { $in: ids } }, { status });
+
+    res.json({
+      success: true,
+      message: 'Submissions updated.',
+      data: {
+        matchedCount: result.matchedCount,
+        modifiedCount: result.modifiedCount,
+      },
+    });
+  } catch (error) {
+    logger.error('Bulk update submissions error:', error);
+    res.status(500).json({ success: false, message: 'Failed to update submissions.' });
   }
 }
