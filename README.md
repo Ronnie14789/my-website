@@ -250,6 +250,26 @@ Configure in GitHub Settings → Branches → main:
 - ✅ Require status checks to pass
 - ✅ Restrict who can push to main
 
+## 📊 Analytics & Monitoring
+
+### Google Analytics 4
+- Real-time page views and user engagement
+- Custom event tracking (including Core Web Vitals)
+- Session and route journey analysis
+
+### Sentry Error Tracking
+- Real-time JavaScript and Node.js error capture
+- Session replay on errors
+- Performance monitoring and profiling
+- Release health tracking
+
+### Performance Monitoring
+- Core Web Vitals tracking (LCP, FID, CLS)
+- API response time monitoring
+- Slow-request detection and warning capture
+
+See [MONITORING.md](./MONITORING.md) for detailed setup instructions.
+
 ## 📊 Performance
 
 - **Lighthouse Score**: 90+ target

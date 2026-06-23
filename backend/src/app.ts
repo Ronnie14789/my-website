@@ -4,6 +4,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { generalLimiter } from './middleware/rateLimiter';
 import { errorHandler, notFound } from './middleware/errorHandler';
+import { monitoringMiddleware } from './middleware/monitoring';
+import { initSentry, sentryErrorHandler } from './config/sentry';
 import { logger } from './utils/logger';
 
 import contactRoutes from './routes/contact';
@@ -18,6 +20,8 @@ import analyticsRoutes from './routes/analytics';
 
 const createApp = (): Application => {
   const app = express();
+
+  initSentry(app);
 
   app.set('trust proxy', 1);
 
@@ -61,6 +65,9 @@ const createApp = (): Application => {
   );
 
   app.use('/api', generalLimiter);
+  if (process.env.ENABLE_PERFORMANCE_MONITORING !== 'false') {
+    app.use('/api', monitoringMiddleware);
+  }
 
   app.get('/api/health', (_req, res) => {
     res.json({
@@ -82,6 +89,7 @@ const createApp = (): Application => {
   app.use('/api/analytics', analyticsRoutes);
 
   app.use(notFound);
+  sentryErrorHandler(app);
   app.use(errorHandler);
 
   return app;
