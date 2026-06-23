@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "composite": true,
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
@@ -21,5 +22,13 @@
     }
   },
   "include": ["src"],
+  "exclude": [
+    "src/api/**/*",
+    "src/contexts/**/*",
+    "src/components/**/index.tsx",
+    "src/hooks/useRevealOnScroll.ts",
+    "src/pages/AdminDashboard.tsx",
+    "src/pages/AdminLogin.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

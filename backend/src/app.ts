@@ -13,6 +13,7 @@ import projectRoutes from './routes/projects';
 import testimonialRoutes from './routes/testimonials';
 import uploadRoutes from './routes/upload';
 import authRoutes from './routes/auth';
+import adminRoutes from './routes/admin';
 import analyticsRoutes from './routes/analytics';
 
 const createApp = (): Application => {
@@ -71,6 +72,7 @@ const createApp = (): Application => {
   });
 
   app.use('/api/auth', authRoutes);
+  app.use('/api/admin', adminRoutes);
   app.use('/api/contact', contactRoutes);
   app.use('/api/newsletter', newsletterRoutes);
   app.use('/api/blog', blogRoutes);
