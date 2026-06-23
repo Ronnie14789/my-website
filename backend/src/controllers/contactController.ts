@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import ContactSubmission from '../models/ContactSubmission';
 import logger from '../utils/logger';
 import { sanitizeOptionalString, sanitizeString } from '../utils/sanitize';
@@ -133,6 +134,11 @@ export async function getSubmissions(req: Request, res: Response): Promise<void>
 
 export async function updateSubmissionStatus(req: Request, res: Response): Promise<void> {
   try {
+    if (!Types.ObjectId.isValid(req.params.id)) {
+      res.status(400).json({ success: false, message: 'Invalid submission id.' });
+      return;
+    }
+
     const status = typeof req.body.status === 'string' ? req.body.status : '';
 
     if (!VALID_STATUSES.includes(status as SubmissionStatus)) {
@@ -176,14 +182,34 @@ export async function bulkUpdateSubmissionStatus(req: Request, res: Response): P
       return;
     }
 
-    const result = await ContactSubmission.updateMany({ _id: { $in: ids } }, { status });
+    const objectIds = ids
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+
+    if (objectIds.length !== ids.length) {
+      res.status(400).json({ success: false, message: 'One or more submission ids are invalid.' });
+      return;
+    }
+
+    const updateResults = await Promise.all(
+      objectIds.map(async (objectId) => {
+        const submission = await ContactSubmission.findById(objectId);
+        if (!submission) {
+          return null;
+        }
+
+        submission.status = status as SubmissionStatus;
+        await submission.save();
+        return submission;
+      }),
+    );
 
     res.json({
       success: true,
       message: 'Submissions updated.',
       data: {
-        matchedCount: result.matchedCount,
-        modifiedCount: result.modifiedCount,
+        matchedCount: updateResults.filter(Boolean).length,
+        modifiedCount: updateResults.filter(Boolean).length,
       },
     });
   } catch (error) {
