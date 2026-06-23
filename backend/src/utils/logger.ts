@@ -1,29 +1,36 @@
-import { createLogger, format, transports } from 'winston';
+import winston from 'winston';
 import path from 'path';
+import fs from 'fs';
 
-const { combine, timestamp, errors, json, colorize, simple } = format;
+const { combine, timestamp, errors, json, colorize, simple } = winston.format;
 
-const logger = createLogger({
-  level: process.env.LOG_LEVEL ?? 'info',
-  format: combine(timestamp(), errors({ stack: true }), json()),
-  defaultMeta: { service: 'portfolio-api' },
+const logDir = process.env.LOG_DIR || 'logs';
+
+if (process.env.NODE_ENV === 'production' && !fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
+
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), errors({ stack: true }), json()),
+  defaultMeta: { service: 'my-website-backend' },
   transports: [
-    new transports.File({
-      filename: path.join('logs', 'error.log'),
-      level: 'error',
-    }),
-    new transports.File({
-      filename: path.join('logs', 'combined.log'),
+    new winston.transports.Console({
+      format: combine(colorize(), simple()),
     }),
   ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
   logger.add(
-    new transports.Console({
-      format: combine(colorize(), simple()),
-    }),
+    new winston.transports.File({
+      filename: path.join(logDir, 'error.log'),
+      level: 'error',
+    })
+  );
+  logger.add(
+    new winston.transports.File({
+      filename: path.join(logDir, 'combined.log'),
+    })
   );
 }
-
-export default logger;

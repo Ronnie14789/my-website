@@ -1,56 +1,29 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { authenticate } from '../middleware/auth';
 import {
-  getProjects,
-  getProjectById,
+  listProjects,
+  getProject,
   createProject,
   updateProject,
   deleteProject,
-} from '../controllers/projectsController';
-import { authenticate } from '../middleware/auth';
-import { validateRequest } from '../middleware/validateRequest';
+} from '../controllers/projectController';
 
 const router = Router();
 
-router.get('/', getProjects);
-router.post(
-  '/',
-  authenticate,
-  [
-    body('title')
-      .trim()
-      .isLength({ min: 3, max: 200 })
-      .withMessage('Title must be 3–200 characters'),
-    body('description')
-      .trim()
-      .isLength({ min: 10, max: 1000 })
-      .withMessage('Description must be 10–1000 characters'),
-    body('tags').optional().isArray().withMessage('Tags must be an array'),
-    body('featured').optional().isBoolean().withMessage('Featured must be a boolean'),
-    body('order').optional().isNumeric().withMessage('Order must be numeric'),
-    body('status')
-      .optional()
-      .isIn(['active', 'completed', 'archived'])
-      .withMessage('Invalid project status'),
-  ],
-  validateRequest,
-  createProject,
-);
-router.patch(
-  '/:id',
-  authenticate,
-  [
-    body('title').optional().trim().isLength({ min: 3, max: 200 }),
-    body('description').optional().trim().isLength({ min: 10, max: 1000 }),
-    body('tags').optional().isArray(),
-    body('featured').optional().isBoolean(),
-    body('order').optional().isNumeric(),
-    body('status').optional().isIn(['active', 'completed', 'archived']),
-  ],
-  validateRequest,
-  updateProject,
-);
+const projectValidation = [
+  body('title').trim().isLength({ min: 3, max: 200 }).withMessage('Title required'),
+  body('description').trim().notEmpty().withMessage('Description required'),
+  body('shortDescription').trim().isLength({ max: 300 }).withMessage('Short description max 300 chars'),
+  body('status').optional().isIn(['active', 'completed', 'archived']).withMessage('Invalid status'),
+  body('featured').optional().isBoolean().withMessage('Featured must be boolean'),
+  body('order').optional().isInt({ min: 0 }).withMessage('Order must be non-negative integer'),
+];
+
+router.get('/', listProjects);
+router.get('/:id', getProject);
+router.post('/', authenticate, projectValidation, createProject);
+router.put('/:id', authenticate, projectValidation, updateProject);
 router.delete('/:id', authenticate, deleteProject);
-router.get('/:id', getProjectById);
 
 export default router;

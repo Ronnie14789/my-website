@@ -1,219 +1,114 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
+import { validationResult } from 'express-validator';
 import ContactSubmission from '../models/ContactSubmission';
-import logger from '../utils/logger';
-import { sanitizeOptionalString, sanitizeString } from '../utils/sanitize';
+import { emailService } from '../services/emailService';
+import { sendSuccess, sendError } from '../utils/apiResponse';
+import { logger } from '../utils/logger';
 
-const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
-type SubmissionStatus = (typeof VALID_STATUSES)[number];
+export const submitContact = async (req: Request, res: Response): Promise<void> => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    sendError(res, 'Validation failed', 422, JSON.stringify(errors.array()));
+    return;
+  }
 
-/**
- * @swagger
- * /contact:
- *   post:
- *     tags: [Contact]
- *     summary: Submit a contact form
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [name, email, subject, message]
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *                 format: email
- *               phone:
- *                 type: string
- *               subject:
- *                 type: string
- *               message:
- *                 type: string
- *     responses:
- *       201:
- *         description: Message sent successfully
- *       400:
- *         description: Validation error
- *       429:
- *         description: Rate limit exceeded
- */
-export async function submitContact(req: Request, res: Response): Promise<void> {
   try {
     const { name, email, phone, subject, message } = req.body;
 
     const submission = await ContactSubmission.create({
-      name: sanitizeString(String(name)),
-      email: sanitizeString(String(email)).toLowerCase(),
-      phone: sanitizeOptionalString(phone),
-      subject: sanitizeString(String(subject)),
-      message: sanitizeString(String(message)),
+      name,
+      email,
+      phone,
+      subject,
+      message,
       ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
     });
 
-    logger.info(`New contact submission: ${submission._id} from ${email}`);
-
-    res.status(201).json({
-      success: true,
-      message: "Message received! I'll get back to you soon.",
-      data: { id: submission._id },
+    Promise.allSettled([
+      emailService.sendContactConfirmation({ name, email, subject, message }),
+      emailService.sendAdminNotification({ name, email, phone, subject, message, ipAddress: req.ip }),
+    ]).then(([confirmResult, adminResult]) => {
+      const emailSent = confirmResult.status === 'fulfilled' && confirmResult.value.success;
+      ContactSubmission.findByIdAndUpdate(submission._id, { emailSent }).catch(() => undefined);
+      if (adminResult.status === 'rejected' || !adminResult.value?.success) {
+        logger.warn('Admin notification email failed', { submissionId: submission._id });
+      }
     });
+
+    sendSuccess(
+      res,
+      { id: submission._id },
+      'Message sent successfully! I will get back to you soon.',
+      201
+    );
   } catch (error) {
     logger.error('Contact submission error:', error);
-    res.status(500).json({ success: false, message: 'Failed to submit contact form' });
+    sendError(res, 'Failed to submit contact form', 500);
   }
-}
+};
 
-/**
- * @swagger
- * /contact:
- *   get:
- *     tags: [Contact]
- *     summary: Get all contact submissions (admin)
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [new, read, replied, archived]
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: List of submissions
- *       401:
- *         description: Unauthorized
- */
-export async function getSubmissions(req: Request, res: Response): Promise<void> {
+export const listContacts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const statusParam = typeof req.query.status === 'string' ? req.query.status : undefined;
-    const status = VALID_STATUSES.includes(statusParam as SubmissionStatus)
-      ? (statusParam as SubmissionStatus)
-      : undefined;
+    const page = Math.max(1, parseInt((req.query['page'] as string) || '1', 10));
+    const limit = Math.min(50, Math.max(1, parseInt((req.query['limit'] as string) || '20', 10)));
+    const status = req.query['status'] as string;
 
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
-
+    const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
     const filter: Record<string, unknown> = {};
-    if (status) filter.status = status;
+    if (status && VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
+      filter['status'] = { $eq: status };
+    }
 
-    const skip = (page - 1) * limit;
-
-    const [submissions, total] = await Promise.all([
-      ContactSubmission.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    const [contacts, total] = await Promise.all([
+      ContactSubmission.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
       ContactSubmission.countDocuments(filter),
     ]);
 
-    res.json({
-      success: true,
-      message: 'Submissions fetched',
-      data: {
-        submissions,
-        pagination: {
-          total,
-          page,
-          pages: Math.ceil(total / limit),
-        },
-      },
+    sendSuccess(res, contacts, 'Contacts retrieved', 200, {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
     });
   } catch (error) {
-    logger.error('Get submissions error:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch submissions' });
+    logger.error('List contacts error:', error);
+    sendError(res, 'Failed to retrieve contacts', 500);
   }
-}
+};
 
-export async function updateSubmissionStatus(req: Request, res: Response): Promise<void> {
+export const updateContactStatus = async (req: Request, res: Response): Promise<void> => {
   try {
-    if (!Types.ObjectId.isValid(req.params.id)) {
-      res.status(400).json({ success: false, message: 'Invalid submission id.' });
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
+    type ContactStatus = (typeof VALID_STATUSES)[number];
+
+    if (!VALID_STATUSES.includes(status as ContactStatus)) {
+      sendError(res, 'Invalid status', 400);
       return;
     }
 
-    const status = typeof req.body.status === 'string' ? req.body.status : '';
-
-    if (!VALID_STATUSES.includes(status as SubmissionStatus)) {
-      res.status(400).json({ success: false, message: 'Invalid submission status.' });
-      return;
-    }
-
-    const submission = await ContactSubmission.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true },
+    const safeStatus: ContactStatus = status as ContactStatus;
+    const contact = await ContactSubmission.findByIdAndUpdate(
+      id,
+      { $set: { status: safeStatus } },
+      { new: true }
     );
 
-    if (!submission) {
-      res.status(404).json({ success: false, message: 'Submission not found.' });
+    if (!contact) {
+      sendError(res, 'Contact not found', 404);
       return;
     }
 
-    res.json({
-      success: true,
-      message: 'Submission updated.',
-      data: submission,
-    });
+    sendSuccess(res, contact, 'Status updated');
   } catch (error) {
-    logger.error('Update submission status error:', error);
-    res.status(500).json({ success: false, message: 'Failed to update submission.' });
+    logger.error('Update contact status error:', error);
+    sendError(res, 'Failed to update status', 500);
   }
-}
-
-export async function bulkUpdateSubmissionStatus(req: Request, res: Response): Promise<void> {
-  try {
-    const { ids, status } = req.body as { ids?: string[]; status?: string };
-
-    if (!Array.isArray(ids) || ids.length === 0) {
-      res.status(400).json({ success: false, message: 'At least one submission id is required.' });
-      return;
-    }
-
-    if (!VALID_STATUSES.includes(status as SubmissionStatus)) {
-      res.status(400).json({ success: false, message: 'Invalid submission status.' });
-      return;
-    }
-
-    const objectIds = ids
-      .filter((id) => Types.ObjectId.isValid(id))
-      .map((id) => new Types.ObjectId(id));
-
-    if (objectIds.length !== ids.length) {
-      res.status(400).json({ success: false, message: 'One or more submission ids are invalid.' });
-      return;
-    }
-
-    const updateResults = await Promise.all(
-      objectIds.map(async (objectId) => {
-        const submission = await ContactSubmission.findById(objectId);
-        if (!submission) {
-          return null;
-        }
-
-        submission.status = status as SubmissionStatus;
-        await submission.save();
-        return submission;
-      }),
-    );
-
-    res.json({
-      success: true,
-      message: 'Submissions updated.',
-      data: {
-        matchedCount: updateResults.filter(Boolean).length,
-        modifiedCount: updateResults.filter(Boolean).length,
-      },
-    });
-  } catch (error) {
-    logger.error('Bulk update submissions error:', error);
-    res.status(500).json({ success: false, message: 'Failed to update submissions.' });
-  }
-}
+};

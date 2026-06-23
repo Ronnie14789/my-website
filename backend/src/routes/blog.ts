@@ -1,56 +1,31 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { authenticate } from '../middleware/auth';
 import {
-  getPosts,
-  getPostBySlug,
+  listPosts,
+  getPost,
   createPost,
   updatePost,
   deletePost,
+  incrementViews,
 } from '../controllers/blogController';
-import { authenticate } from '../middleware/auth';
-import { validateRequest } from '../middleware/validateRequest';
 
 const router = Router();
 
-router.get('/', getPosts);
-router.post(
-  '/',
-  authenticate,
-  [
-    body('title')
-      .trim()
-      .isLength({ min: 3, max: 200 })
-      .withMessage('Title must be 3–200 characters'),
-    body('slug').trim().isLength({ min: 3, max: 200 }).withMessage('Slug must be 3–200 characters'),
-    body('excerpt')
-      .trim()
-      .isLength({ min: 10, max: 500 })
-      .withMessage('Excerpt must be 10–500 characters'),
-    body('content')
-      .trim()
-      .isLength({ min: 50 })
-      .withMessage('Content must be at least 50 characters'),
-    body('tags').optional().isArray().withMessage('Tags must be an array'),
-    body('published').optional().isBoolean().withMessage('Published must be a boolean'),
-  ],
-  validateRequest,
-  createPost,
-);
-router.patch(
-  '/:id',
-  authenticate,
-  [
-    body('title').optional().trim().isLength({ min: 3, max: 200 }),
-    body('slug').optional().trim().isLength({ min: 3, max: 200 }),
-    body('excerpt').optional().trim().isLength({ min: 10, max: 500 }),
-    body('content').optional().trim().isLength({ min: 50 }),
-    body('tags').optional().isArray(),
-    body('published').optional().isBoolean(),
-  ],
-  validateRequest,
-  updatePost,
-);
+const postValidation = [
+  body('title').trim().isLength({ min: 3, max: 200 }).withMessage('Title must be 3-200 characters'),
+  body('slug').optional().trim().matches(/^[a-z0-9-]+$/).withMessage('Slug must be lowercase alphanumeric with hyphens'),
+  body('excerpt').trim().isLength({ min: 10, max: 500 }).withMessage('Excerpt must be 10-500 characters'),
+  body('content').trim().notEmpty().withMessage('Content is required'),
+  body('tags').optional().isArray().withMessage('Tags must be an array'),
+  body('status').optional().isIn(['draft', 'published', 'archived']).withMessage('Invalid status'),
+];
+
+router.get('/', listPosts);
+router.get('/:slug', getPost);
+router.post('/:id/views', incrementViews);
+router.post('/', authenticate, postValidation, createPost);
+router.put('/:id', authenticate, postValidation, updatePost);
 router.delete('/:id', authenticate, deletePost);
-router.get('/:slug', getPostBySlug);
 
 export default router;

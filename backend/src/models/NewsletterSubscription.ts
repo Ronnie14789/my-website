@@ -1,40 +1,17 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     NewsletterSubscription:
- *       type: object
- *       required: [email]
- *       properties:
- *         _id:
- *           type: string
- *         email:
- *           type: string
- *           format: email
- *         active:
- *           type: boolean
- *         subscribedAt:
- *           type: string
- *           format: date-time
- *         unsubscribedAt:
- *           type: string
- *           format: date-time
- *         ipAddress:
- *           type: string
- */
 export interface INewsletterSubscription extends Document {
   email: string;
-  active: boolean;
-  subscribedAt: Date;
-  unsubscribedAt?: Date;
-  ipAddress?: string;
+  name?: string;
+  status: 'active' | 'unsubscribed' | 'bounced';
+  unsubscribeToken: string;
+  confirmedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const NewsletterSubscriptionSchema = new Schema<INewsletterSubscription>(
+const newsletterSubscriptionSchema = new Schema<INewsletterSubscription>(
   {
     email: {
       type: String,
@@ -42,20 +19,32 @@ const NewsletterSubscriptionSchema = new Schema<INewsletterSubscription>(
       unique: true,
       trim: true,
       lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
+      match: [/^\S+@\S+\.\S+$/, 'Invalid email address'],
     },
-    active: { type: Boolean, default: true },
-    subscribedAt: { type: Date, default: Date.now },
-    unsubscribedAt: { type: Date },
-    ipAddress: { type: String },
+    name: { type: String, trim: true, maxlength: 100 },
+    status: {
+      type: String,
+      enum: ['active', 'unsubscribed', 'bounced'],
+      default: 'active',
+    },
+    unsubscribeToken: {
+      type: String,
+      default: () => uuidv4(),
+      unique: true,
+    },
+    confirmedAt: { type: Date },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
-NewsletterSubscriptionSchema.index({ email: 1 }, { unique: true });
-NewsletterSubscriptionSchema.index({ active: 1 });
+newsletterSubscriptionSchema.index({ email: 1 });
+newsletterSubscriptionSchema.index({ status: 1 });
 
-export default model<INewsletterSubscription>(
+const NewsletterSubscription: Model<INewsletterSubscription> = mongoose.model(
   'NewsletterSubscription',
-  NewsletterSubscriptionSchema,
+  newsletterSubscriptionSchema
 );
+export default NewsletterSubscription;

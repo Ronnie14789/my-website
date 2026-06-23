@@ -1,38 +1,47 @@
 import 'dotenv/config';
-import app from './app';
-import { connectDatabase } from './config/database';
-import logger from './utils/logger';
+import createApp from './app';
+import connectDB from './config/database';
+import { logger } from './utils/logger';
 
-const PORT = Number(process.env.PORT ?? 5000);
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
-async function startServer(): Promise<void> {
-  try {
-    await connectDatabase();
+const startServer = async (): Promise<void> => {
+  await connectDB();
 
-    const server = app.listen(PORT, () => {
-      logger.info(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV ?? 'development'} mode`);
-      logger.info(`📚 API Docs: http://localhost:${PORT}/api/docs`);
+  const app = createApp();
+
+  const server = app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`API Health: http://localhost:${PORT}/api/health`);
+  });
+
+  const gracefulShutdown = (signal: string) => {
+    logger.info(`${signal} received. Shutting down gracefully...`);
+    server.close(() => {
+      logger.info('HTTP server closed');
+      process.exit(0);
     });
+    setTimeout(() => {
+      logger.error('Force shutdown after timeout');
+      process.exit(1);
+    }, 30000);
+  };
 
-    // Graceful shutdown
-    const shutdown = (signal: string) => {
-      logger.info(`${signal} received – shutting down gracefully`);
-      server.close(() => {
-        logger.info('HTTP server closed');
-        process.exit(0);
-      });
-      setTimeout(() => {
-        logger.error('Forced shutdown');
-        process.exit(1);
-      }, 10_000);
-    };
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
-  } catch (error) {
-    logger.error('Failed to start server:', error);
+  process.on('unhandledRejection', (reason) => {
+    logger.error('Unhandled Rejection:', reason);
+  });
+
+  process.on('uncaughtException', (error) => {
+    logger.error('Uncaught Exception:', error);
     process.exit(1);
-  }
-}
+  });
+};
 
-startServer();
+startServer().catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+});

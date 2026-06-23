@@ -1,29 +1,25 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-export default function NotFound() {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '1.5rem',
-        textAlign: 'center',
-        padding: '2rem',
-      }}
+const NotFound: React.FC = () => (
+  <div className="min-h-screen bg-slate-900 flex items-center justify-center px-6">
+    <motion.div
+      className="text-center"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
     >
-      <h1 style={{ fontSize: '6rem', fontWeight: 800, color: 'var(--accent)', lineHeight: 1 }}>
-        404
-      </h1>
-      <h2 style={{ fontSize: '2rem', fontWeight: 600 }}>Page Not Found</h2>
-      <p style={{ color: 'var(--text-secondary)', maxWidth: 400 }}>
-        The page you&apos;re looking for doesn&apos;t exist or has been moved.
-      </p>
-      <Link to="/" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-        Go Back Home
+      <div className="text-8xl font-bold text-blue-400 mb-4">404</div>
+      <h1 className="text-3xl font-bold text-white mb-4">Page Not Found</h1>
+      <p className="text-slate-400 mb-8">The page you're looking for doesn't exist.</p>
+      <Link
+        to="/"
+        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity"
+      >
+        Go Home
       </Link>
-    </div>
-  );
-}
+    </motion.div>
+  </div>
+);
+
+export default NotFound;

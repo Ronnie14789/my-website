@@ -1,21 +1,22 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { getSession, login } from '../controllers/authController';
+import { authLimiter } from '../middleware/rateLimiter';
+import { login, refreshToken, getProfile } from '../controllers/authController';
 import { authenticate } from '../middleware/auth';
-import { validateRequest } from '../middleware/validateRequest';
 
 const router = Router();
 
 router.post(
   '/login',
+  authLimiter,
   [
-    body('email').isEmail().normalizeEmail().withMessage('Valid email address required'),
-    body('password').isString().isLength({ min: 8, max: 128 }).withMessage('Password is required'),
+    body('username').trim().notEmpty().withMessage('Username required'),
+    body('password').notEmpty().withMessage('Password required'),
   ],
-  validateRequest,
-  login,
+  login
 );
 
-router.get('/me', authenticate, getSession);
+router.post('/refresh', authenticate, refreshToken);
+router.get('/profile', authenticate, getProfile);
 
 export default router;
