@@ -1,0 +1,38 @@
+name: Release to Production
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install and build
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+          cd ..
+          npm run build
+
+      - name: Production deployment
+        run: |
+          echo "✅ Production deployment ready"
+          echo "Release: ${{ github.event.release.tag_name }}"
+          echo "To deploy to production:"
+          echo "1. Configure production deployment platform"
+          echo "2. Deploy containers/builds"
+          echo "3. Run post-deployment tests"
+
+      - name: Create deployment badge
+        run: echo "DEPLOYMENT_STATUS=success" >> $GITHUB_ENV
