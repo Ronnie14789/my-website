@@ -58,10 +58,14 @@ export const updateTestimonial = async (req: Request, res: Response): Promise<vo
   }
 
   try {
-    const testimonial = await Testimonial.findByIdAndUpdate(req.params['id'], req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const { name, email, company, role, content, rating, approved, featured, avatarUrl } =
+      req.body as Record<string, unknown>;
+
+    const testimonial = await Testimonial.findByIdAndUpdate(
+      req.params['id'],
+      { $set: { name, email, company, role, content, rating, approved, featured, avatarUrl } },
+      { new: true, runValidators: true }
+    );
     if (!testimonial) {
       sendError(res, 'Testimonial not found', 404);
       return;

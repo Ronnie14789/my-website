@@ -103,7 +103,7 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
     const { title, slug, excerpt, content, featuredImage, tags, status } = req.body;
 
     const autoSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const existing = await BlogPost.findOne({ slug: autoSlug });
+    const existing = await BlogPost.findOne({ slug: { $eq: autoSlug } });
     if (existing) {
       sendError(res, 'A post with this slug already exists', 409);
       return;
@@ -155,10 +155,21 @@ export const updatePost = async (req: Request, res: Response): Promise<void> => 
   }
 
   try {
-    const post = await BlogPost.findByIdAndUpdate(req.params['id'], req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const { title, slug, excerpt, content, featuredImage, tags, status } = req.body as {
+      title?: string;
+      slug?: string;
+      excerpt?: string;
+      content?: string;
+      featuredImage?: string;
+      tags?: string[];
+      status?: string;
+    };
+
+    const post = await BlogPost.findByIdAndUpdate(
+      req.params['id'],
+      { $set: { title, slug, excerpt, content, featuredImage, tags, status } },
+      { new: true, runValidators: true }
+    );
 
     if (!post) {
       sendError(res, 'Post not found', 404);

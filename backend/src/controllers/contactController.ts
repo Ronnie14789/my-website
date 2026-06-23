@@ -54,9 +54,10 @@ export const listContacts = async (req: Request, res: Response): Promise<void> =
     const limit = Math.min(50, Math.max(1, parseInt((req.query['limit'] as string) || '20', 10)));
     const status = req.query['status'] as string;
 
+    const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
     const filter: Record<string, unknown> = {};
-    if (status && ['new', 'read', 'replied', 'archived'].includes(status)) {
-      filter['status'] = status;
+    if (status && VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
+      filter['status'] = { $eq: status };
     }
 
     const [contacts, total] = await Promise.all([
@@ -85,15 +86,19 @@ export const updateContactStatus = async (req: Request, res: Response): Promise<
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['new', 'read', 'replied', 'archived'].includes(status)) {
+    const VALID_STATUSES = ['new', 'read', 'replied', 'archived'] as const;
+    type ContactStatus = (typeof VALID_STATUSES)[number];
+
+    if (!VALID_STATUSES.includes(status as ContactStatus)) {
       sendError(res, 'Invalid status', 400);
       return;
     }
 
+    const safeStatus: ContactStatus = status as ContactStatus;
     const contact = await ContactSubmission.findByIdAndUpdate(
       id,
-      { status },
-      { new: true, runValidators: true }
+      { $set: { status: safeStatus } },
+      { new: true }
     );
 
     if (!contact) {

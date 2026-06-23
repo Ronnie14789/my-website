@@ -39,6 +39,13 @@ const configureCloudinary = () => {
 
 export const isCloudinaryConfigured = configureCloudinary();
 
+// Map mime types to safe extensions (no user input)
+const MIME_TO_EXT: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+};
+
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     const tmpDir = path.join(process.cwd(), 'tmp');
@@ -48,8 +55,10 @@ const storage = multer.diskStorage({
     cb(null, tmpDir);
   },
   filename: (_req, file, cb) => {
+    // Derive extension from validated mimetype, NOT from user-provided filename
+    const ext = MIME_TO_EXT[file.mimetype] ?? '.jpg';
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
+    cb(null, `upload-${uniqueSuffix}${ext}`);
   },
 });
 
@@ -75,13 +84,20 @@ export const upload = multer({
 });
 
 const optimizeLocalImage = async (filePath: string): Promise<void> => {
-  const buffer = await sharp(filePath)
+  // Validate that the file path is within our controlled tmp directory
+  const tmpDir = path.resolve(process.cwd(), 'tmp');
+  const resolvedPath = path.resolve(filePath);
+  if (!resolvedPath.startsWith(tmpDir + path.sep)) {
+    throw new Error('Invalid file path: outside allowed directory');
+  }
+
+  const buffer = await sharp(resolvedPath)
     .rotate()
     .resize({ width: 2400, withoutEnlargement: true })
     .toFormat('webp', { quality: 85 })
     .toBuffer();
 
-  fs.writeFileSync(filePath, buffer);
+  fs.writeFileSync(resolvedPath, buffer);
 };
 
 export const uploadToCloud = async (
@@ -93,10 +109,17 @@ export const uploadToCloud = async (
     throw new Error('Cloud storage not configured');
   }
 
-  try {
-    await optimizeLocalImage(filePath);
+  // Validate path is within tmp directory before any file operation
+  const tmpDir = path.resolve(process.cwd(), 'tmp');
+  const resolvedPath = path.resolve(filePath);
+  if (!resolvedPath.startsWith(tmpDir + path.sep)) {
+    throw new Error('Invalid file path: outside allowed directory');
+  }
 
-    const result = await cloudinary.uploader.upload(filePath, {
+  try {
+    await optimizeLocalImage(resolvedPath);
+
+    const result = await cloudinary.uploader.upload(resolvedPath, {
       folder: `my-website/${folder}`,
       public_id: fileName,
       resource_type: 'image',
@@ -114,8 +137,8 @@ export const uploadToCloud = async (
       folder,
     };
   } finally {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (fs.existsSync(resolvedPath)) {
+      fs.unlinkSync(resolvedPath);
     }
   }
 };

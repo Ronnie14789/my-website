@@ -74,10 +74,41 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   }
 
   try {
-    const project = await Project.findByIdAndUpdate(req.params['id'], req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const {
+      title,
+      description,
+      shortDescription,
+      coverImage,
+      images,
+      tags,
+      technologies,
+      status,
+      featured,
+      order,
+      githubUrl,
+      liveUrl,
+    } = req.body as Record<string, unknown>;
+
+    const project = await Project.findByIdAndUpdate(
+      req.params['id'],
+      {
+        $set: {
+          title,
+          description,
+          shortDescription,
+          coverImage,
+          images,
+          tags,
+          technologies,
+          status,
+          featured,
+          order,
+          githubUrl,
+          liveUrl,
+        },
+      },
+      { new: true, runValidators: true }
+    );
 
     if (!project) {
       sendError(res, 'Project not found', 404);

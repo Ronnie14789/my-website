@@ -15,7 +15,7 @@ export const subscribe = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, name } = req.body;
 
-    const existing = await NewsletterSubscription.findOne({ email });
+    const existing = await NewsletterSubscription.findOne({ email: { $eq: email } });
 
     if (existing) {
       if (existing.status === 'active') {
@@ -87,9 +87,10 @@ export const listSubscribers = async (req: Request, res: Response): Promise<void
     const limit = Math.min(100, Math.max(1, parseInt((req.query['limit'] as string) || '20', 10)));
     const status = req.query['status'] as string;
 
+    const VALID_SUB_STATUSES = ['active', 'unsubscribed', 'bounced'] as const;
     const filter: Record<string, unknown> = {};
-    if (status && ['active', 'unsubscribed', 'bounced'].includes(status)) {
-      filter['status'] = status;
+    if (status && VALID_SUB_STATUSES.includes(status as (typeof VALID_SUB_STATUSES)[number])) {
+      filter['status'] = { $eq: status };
     }
 
     const [subscribers, total] = await Promise.all([
