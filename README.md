@@ -199,6 +199,57 @@ cd frontend && npm run build
 npm run build
 ```
 
+## 🔄 CI/CD Pipeline
+
+This project uses GitHub Actions for automated testing, security scanning, and deployment.
+
+### Workflows
+
+- **CI** (`.github/workflows/ci.yml`)
+  - Runs on: every push and pull request
+  - Checks: lint, TypeScript, build, tests
+  - Status: Required to pass before merge
+
+- **Security** (`.github/workflows/security.yml`)
+  - CodeQL analysis for security vulnerabilities
+  - Secret scanning to prevent credential leaks
+  - Status: Required to pass before merge
+
+- **Staging Deploy** (`.github/workflows/deploy-staging.yml`)
+  - Runs on: merge to main
+  - Deploys to staging environment
+  - Runs smoke tests
+
+- **Production Release** (`.github/workflows/release.yml`)
+  - Runs on: release published
+  - Deploys to production
+  - Creates release notes
+
+### Status Badges
+
+[![CI - Build & Test](https://github.com/Ronnie14789/my-website/actions/workflows/ci.yml/badge.svg)](https://github.com/Ronnie14789/my-website/actions/workflows/ci.yml)
+[![Security Checks](https://github.com/Ronnie14789/my-website/actions/workflows/security.yml/badge.svg)](https://github.com/Ronnie14789/my-website/actions/workflows/security.yml)
+
+### Deployment
+
+#### Staging
+Automatically deployed on merge to `main`.
+
+#### Production
+Create a release tag to deploy to production:
+```bash
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+```
+
+### Branch Protection Rules
+
+Configure in GitHub Settings → Branches → main:
+- ✅ Require CI workflow to pass
+- ✅ Require code reviews before merge
+- ✅ Require status checks to pass
+- ✅ Restrict who can push to main
+
 ## 📊 Performance
 
 - **Lighthouse Score**: 90+ target

@@ -1,0 +1,11 @@
+# Default reviewers for all changes
+* @Ronnie14789
+
+# Backend changes
+backend/ @Ronnie14789
+
+# Frontend changes
+frontend/ @Ronnie14789
+
+# Workflows
+.github/workflows/ @Ronnie14789
