@@ -9,6 +9,7 @@ import Certifications from '../components/Certifications';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
+import InstallPrompt from '../components/InstallPrompt';
 
 export default function Home() {
   // Reveal on scroll for all .reveal elements
@@ -45,6 +46,7 @@ export default function Home() {
         <Certifications />
         <Contact />
       </main>
+      <InstallPrompt />
       <Footer />
       <ScrollToTop />
     </>

@@ -10,6 +10,8 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { swaggerSpec } from './config/swagger';
 import logger from './utils/logger';
 
+import authRouter from './routes/auth';
+import adminRouter from './routes/admin';
 import healthRouter from './routes/health';
 import contactRouter from './routes/contact';
 import projectsRouter from './routes/projects';
@@ -81,6 +83,8 @@ app.use(
 );
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
+app.use('/api/auth', authRouter);
+app.use('/api/admin', adminRouter);
 app.use('/api/health', healthRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/projects', projectsRouter);

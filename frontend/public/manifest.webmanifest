@@ -1,0 +1,16 @@
+{
+  "name": "Ecatu Ronald Portfolio",
+  "short_name": "Ecatu Portfolio",
+  "description": "Premium portfolio for Ecatu Ronald with offline-ready browsing and admin access.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#16181d",
+  "theme_color": "#0d6efd",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

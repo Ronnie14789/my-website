@@ -4,14 +4,14 @@ A premium full-stack portfolio website for **Ecatu Ronald**, Senior Automotive T
 
 ## Tech Stack
 
-| Layer      | Technology                                        |
-|------------|---------------------------------------------------|
-| Frontend   | React 18, TypeScript, Vite, Tailwind CSS, React Router v6, Axios |
-| Backend    | Node.js, Express 4, TypeScript, Mongoose          |
-| Database   | MongoDB 7                                         |
-| DevOps     | Docker, Docker Compose, Nginx                     |
-| Quality    | ESLint, Prettier, Husky, lint-staged              |
-| API Docs   | Swagger / OpenAPI 3.0                             |
+| Layer    | Technology                                                       |
+| -------- | ---------------------------------------------------------------- |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, React Router v6, Axios |
+| Backend  | Node.js, Express 4, TypeScript, Mongoose                         |
+| Database | MongoDB 7                                                        |
+| DevOps   | Docker, Docker Compose, Nginx                                    |
+| Quality  | ESLint, Prettier, Husky, lint-staged                             |
+| API Docs | Swagger / OpenAPI 3.0                                            |
 
 ## Project Structure
 
@@ -22,9 +22,11 @@ my-website/
 │   │   ├── api/            # Axios client & API endpoints
 │   │   ├── components/     # UI components (Header, Hero, …)
 │   │   ├── hooks/          # Custom React hooks
-│   │   ├── pages/          # Page components (Home, NotFound)
+│   │   ├── contexts/       # Theme, auth, and toast state
+│   │   ├── pages/          # Page components (Home, Admin, NotFound)
 │   │   └── types/          # TypeScript type definitions
 │   ├── Dockerfile
+│   ├── public/             # PWA manifest + service worker
 │   └── nginx.conf
 │
 ├── backend/                # Express + TypeScript API
@@ -34,7 +36,7 @@ my-website/
 │   │   ├── middleware/     # Auth, rate limiting, error handling
 │   │   ├── models/         # Mongoose schemas
 │   │   ├── routes/         # Express route definitions
-│   │   └── utils/          # Logger (Winston)
+│   │   └── utils/          # Logger + sanitizers
 │   └── Dockerfile
 │
 ├── docker-compose.yml      # Production Docker Compose
@@ -77,9 +79,19 @@ npm run dev
 # Swagger docs at http://localhost:5000/api/docs
 ```
 
+### 4.1 Admin Credentials
+
+Set the admin email and bcrypt password hash in `.env` before using `/admin/login`:
+
+```bash
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD_HASH=...
+```
+
 ### 5. Docker (Full Stack)
 
 **Development:**
+
 ```bash
 npm run docker:dev
 # Frontend: http://localhost:3000
@@ -88,6 +100,7 @@ npm run docker:dev
 ```
 
 **Production:**
+
 ```bash
 # Copy and fill env vars
 cp .env.example .env
@@ -100,18 +113,36 @@ npm run docker:prod
 
 ## API Endpoints
 
-| Method | Endpoint                     | Description                  | Auth  |
-|--------|------------------------------|------------------------------|-------|
-| GET    | /api/health                  | Health check                 | ✗     |
-| POST   | /api/contact                 | Submit contact form          | ✗     |
-| GET    | /api/contact                 | List contact submissions     | Admin |
-| GET    | /api/projects                | List projects                | ✗     |
-| GET    | /api/projects/:id            | Get project by ID            | ✗     |
-| GET    | /api/blog                    | List published posts         | ✗     |
-| GET    | /api/blog/:slug              | Get post by slug             | ✗     |
-| GET    | /api/testimonials            | List testimonials            | ✗     |
-| POST   | /api/newsletter/subscribe    | Subscribe to newsletter      | ✗     |
-| POST   | /api/newsletter/unsubscribe  | Unsubscribe from newsletter  | ✗     |
+| Method | Endpoint                    | Description                    | Auth  |
+| ------ | --------------------------- | ------------------------------ | ----- |
+| GET    | /api/health                 | Health check                   | ✗     |
+| POST   | /api/contact                | Submit contact form            | ✗     |
+| GET    | /api/contact                | List contact submissions       | Admin |
+| PATCH  | /api/contact/:id/status     | Update contact status          | Admin |
+| PATCH  | /api/contact/bulk-status    | Bulk-update contact status     | Admin |
+| GET    | /api/projects               | List projects                  | ✗     |
+| POST   | /api/projects               | Create project                 | Admin |
+| PATCH  | /api/projects/:id           | Update project                 | Admin |
+| DELETE | /api/projects/:id           | Delete project                 | Admin |
+| GET    | /api/projects/:id           | Get project by ID              | ✗     |
+| GET    | /api/blog                   | List published posts           | ✗     |
+| POST   | /api/blog                   | Create blog post               | Admin |
+| PATCH  | /api/blog/:id               | Update blog post               | Admin |
+| DELETE | /api/blog/:id               | Delete blog post               | Admin |
+| GET    | /api/blog/:slug             | Get post by slug               | ✗     |
+| GET    | /api/testimonials           | List testimonials              | ✗     |
+| GET    | /api/testimonials/admin     | List all testimonials          | Admin |
+| POST   | /api/testimonials           | Create testimonial             | Admin |
+| PATCH  | /api/testimonials/:id       | Update testimonial             | Admin |
+| DELETE | /api/testimonials/:id       | Delete testimonial             | Admin |
+| POST   | /api/newsletter/subscribe   | Subscribe to newsletter        | ✗     |
+| POST   | /api/newsletter/unsubscribe | Unsubscribe from newsletter    | ✗     |
+| GET    | /api/newsletter             | List subscribers               | Admin |
+| GET    | /api/newsletter/export      | Export subscribers CSV         | Admin |
+| PATCH  | /api/newsletter/:id/status  | Activate/deactivate subscriber | Admin |
+| POST   | /api/auth/login             | Admin sign-in                  | ✗     |
+| GET    | /api/auth/me                | Current admin session          | Admin |
+| GET    | /api/admin/overview         | Dashboard overview metrics     | Admin |
 
 Full interactive documentation is available at `/api/docs` (Swagger UI).
 
@@ -119,35 +150,44 @@ Full interactive documentation is available at `/api/docs` (Swagger UI).
 
 From the **repository root**:
 
-| Script              | Description                              |
-|---------------------|------------------------------------------|
-| `npm run dev:frontend`  | Start frontend dev server            |
-| `npm run dev:backend`   | Start backend dev server             |
-| `npm run build`         | Build both frontend & backend        |
-| `npm run lint`          | Lint both frontend & backend         |
-| `npm run format`        | Format all files with Prettier       |
-| `npm run docker:dev`    | Start full stack in Docker (dev)     |
-| `npm run docker:prod`   | Start full stack in Docker (prod)    |
-| `npm run docker:down`   | Stop Docker containers               |
+| Script                 | Description                       |
+| ---------------------- | --------------------------------- |
+| `npm run dev:frontend` | Start frontend dev server         |
+| `npm run dev:backend`  | Start backend dev server          |
+| `npm run build`        | Build both frontend & backend     |
+| `npm run lint`         | Lint both frontend & backend      |
+| `npm run format`       | Format all files with Prettier    |
+| `npm run docker:dev`   | Start full stack in Docker (dev)  |
+| `npm run docker:prod`  | Start full stack in Docker (prod) |
+| `npm run docker:down`  | Stop Docker containers            |
 
 ## Security Features
 
 - **Helmet** – security HTTP headers
 - **CORS** – origin whitelist configurable via `.env`
 - **Rate Limiting** – general (100 req/15 min), contact (5/hr), newsletter (3/hr)
-- **JWT** – token-based ****** structure for admin endpoints
+- **JWT** – token-based authentication for admin endpoints
 - **Input Validation** – express-validator on all POST routes
+- **Input Sanitization** – trims and strips angle brackets before persistence
 - **Request Size Limit** – 10 KB max body
+
+## Phase 2 Highlights
+
+- JWT-protected `/admin` dashboard with overview cards, contact inbox workflows, and newsletter export
+- Dark/light theme toggle with localStorage persistence and system preference fallback
+- Toast notifications, loading states, and an application-level error boundary
+- Route-based lazy loading for admin and public pages
+- Progressive Web App assets via `manifest.webmanifest` and `public/sw.js`
 
 ## Database Schemas
 
-| Collection              | Purpose                                    |
-|-------------------------|--------------------------------------------|
-| `contactsubmissions`    | Contact form submissions with status       |
-| `blogposts`             | Blog articles with slug, tags, views       |
-| `projects`              | Portfolio projects with tags and links     |
-| `testimonials`          | Client testimonials (moderation flow)      |
-| `newslettersubscriptions` | Email subscriptions with unsub support  |
+| Collection                | Purpose                                |
+| ------------------------- | -------------------------------------- |
+| `contactsubmissions`      | Contact form submissions with status   |
+| `blogposts`               | Blog articles with slug, tags, views   |
+| `projects`                | Portfolio projects with tags and links |
+| `testimonials`            | Client testimonials (moderation flow)  |
+| `newslettersubscriptions` | Email subscriptions with unsub support |
 
 ## Environment Variables
 
