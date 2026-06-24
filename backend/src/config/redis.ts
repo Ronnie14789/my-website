@@ -80,7 +80,9 @@ export const cacheDelPattern = async (pattern: string): Promise<void> => {
     }
   }
 
-  const regex = new RegExp(`^${pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*')}$`);
+  const regex = new RegExp(
+    `^${pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*')}$`,
+  );
   for (const key of memoryCache.keys()) {
     if (regex.test(key)) {
       memoryCache.delete(key);

@@ -65,7 +65,7 @@ const storage = multer.diskStorage({
 const fileFilter = (
   _req: Express.Request,
   file: Express.Multer.File,
-  cb: multer.FileFilterCallback
+  cb: multer.FileFilterCallback,
 ) => {
   if (ALLOWED_TYPES.includes(file.mimetype)) {
     cb(null, true);
@@ -103,7 +103,7 @@ const optimizeLocalImage = async (filePath: string): Promise<void> => {
 export const uploadToCloud = async (
   filePath: string,
   folder: UploadFolder,
-  fileName?: string
+  fileName?: string,
 ): Promise<UploadResult> => {
   if (!isCloudinaryConfigured) {
     throw new Error('Cloud storage not configured');
@@ -163,7 +163,7 @@ export const getOptimizedUrl = (
     width?: number;
     height?: number;
     crop?: string;
-  }
+  },
 ): string => {
   if (!isCloudinaryConfigured) {
     return publicId;

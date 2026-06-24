@@ -17,6 +17,6 @@ export const usePageTransition = () => {
   const location = useLocation();
   return useMemo(
     () => ({ key: location.pathname, variants: pageVariants, transition: pageTransition }),
-    [location]
+    [location],
   );
 };

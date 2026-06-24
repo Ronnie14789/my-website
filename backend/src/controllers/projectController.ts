@@ -107,7 +107,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
           liveUrl,
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!project) {

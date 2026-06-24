@@ -5,6 +5,7 @@ A full-stack, enterprise-grade portfolio website for Ecatu Ronald — Senior Tec
 ## 🚀 Features
 
 ### Frontend
+
 - **React 18** + TypeScript + Vite
 - **Framer Motion** animations — typing effect, parallax, stagger reveals, page transitions
 - **Tailwind CSS** dark-theme design system
@@ -13,6 +14,7 @@ A full-stack, enterprise-grade portfolio website for Ecatu Ronald — Senior Tec
 - **Code splitting** — lazy-loaded routes for performance
 
 ### Backend
+
 - **Express** + TypeScript REST API
 - **MongoDB** — 6 Mongoose models with full TypeScript support
 - **Email Service** — Nodemailer with HTML templates (Handlebars)
@@ -59,6 +61,7 @@ my-website/
 ## ⚡ Quick Start
 
 ### Prerequisites
+
 - Node.js 20+
 - MongoDB (local or Atlas)
 - Redis (optional — falls back to in-memory cache)
@@ -94,6 +97,7 @@ cd frontend && npm run dev
 ```
 
 Or from root:
+
 ```bash
 npm run dev
 ```
@@ -112,45 +116,48 @@ npm run docker:dev
 ```
 
 Access:
+
 - **Frontend**: http://localhost:80
 - **Backend API**: http://localhost:3001/api
 - **Health check**: http://localhost:3001/api/health
 
 ## 🔑 API Endpoints
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/health` | — | Health check |
-| POST | `/api/auth/login` | — | Admin login |
-| GET | `/api/contact` | ✅ | List submissions |
-| POST | `/api/contact` | — | Submit contact form |
-| GET | `/api/blog` | — | List published posts |
-| GET | `/api/blog/:slug` | — | Get post by slug |
-| POST | `/api/blog` | ✅ | Create post |
-| PUT | `/api/blog/:id` | ✅ | Update post |
-| DELETE | `/api/blog/:id` | ✅ | Delete post |
-| GET | `/api/projects` | — | List projects |
-| POST | `/api/projects` | ✅ | Create project |
-| GET | `/api/testimonials` | — | List approved testimonials |
-| POST | `/api/testimonials` | — | Submit testimonial |
-| PATCH | `/api/testimonials/:id/approve` | ✅ | Approve testimonial |
-| POST | `/api/newsletter/subscribe` | — | Subscribe to newsletter |
-| GET | `/api/newsletter/unsubscribe` | — | Unsubscribe via token |
-| POST | `/api/upload/project-image` | ✅ | Upload project image |
-| POST | `/api/upload/blog-image` | ✅ | Upload blog image |
-| POST | `/api/upload/avatar` | ✅ | Upload avatar |
-| GET | `/api/analytics/dashboard` | ✅ | Dashboard stats |
+| Method | Endpoint                        | Auth | Description                |
+| ------ | ------------------------------- | ---- | -------------------------- |
+| GET    | `/api/health`                   | —    | Health check               |
+| POST   | `/api/auth/login`               | —    | Admin login                |
+| GET    | `/api/contact`                  | ✅   | List submissions           |
+| POST   | `/api/contact`                  | —    | Submit contact form        |
+| GET    | `/api/blog`                     | —    | List published posts       |
+| GET    | `/api/blog/:slug`               | —    | Get post by slug           |
+| POST   | `/api/blog`                     | ✅   | Create post                |
+| PUT    | `/api/blog/:id`                 | ✅   | Update post                |
+| DELETE | `/api/blog/:id`                 | ✅   | Delete post                |
+| GET    | `/api/projects`                 | —    | List projects              |
+| POST   | `/api/projects`                 | ✅   | Create project             |
+| GET    | `/api/testimonials`             | —    | List approved testimonials |
+| POST   | `/api/testimonials`             | —    | Submit testimonial         |
+| PATCH  | `/api/testimonials/:id/approve` | ✅   | Approve testimonial        |
+| POST   | `/api/newsletter/subscribe`     | —    | Subscribe to newsletter    |
+| GET    | `/api/newsletter/unsubscribe`   | —    | Unsubscribe via token      |
+| POST   | `/api/upload/project-image`     | ✅   | Upload project image       |
+| POST   | `/api/upload/blog-image`        | ✅   | Upload blog image          |
+| POST   | `/api/upload/avatar`            | ✅   | Upload avatar              |
+| GET    | `/api/analytics/dashboard`      | ✅   | Dashboard stats            |
 
 ## 📧 Email Setup
 
 Supports Gmail, SendGrid, Mailgun via SMTP:
 
 **Gmail:**
+
 1. Enable 2FA on your Google account
 2. Generate an App Password: Google Account → Security → App Passwords
 3. Set `SMTP_USER=your@gmail.com` and `SMTP_PASS=your-app-password`
 
 **SendGrid:**
+
 ```
 SMTP_HOST=smtp.sendgrid.net
 SMTP_PORT=587
@@ -182,6 +189,7 @@ db.adminusers.insertOne({
 ```
 
 Or use bcrypt to generate a hash:
+
 ```bash
 node -e "const b=require('bcryptjs');b.hash('yourPassword',12).then(h=>console.log(h))"
 ```

@@ -15,7 +15,14 @@ export interface IAdminUser extends Document {
 
 const adminUserSchema = new Schema<IAdminUser>(
   {
-    username: { type: String, required: true, unique: true, trim: true, minlength: 3, maxlength: 30 },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 30,
+    },
     email: {
       type: String,
       required: true,
@@ -32,7 +39,7 @@ const adminUserSchema = new Schema<IAdminUser>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 adminUserSchema.pre('save', async function (next) {
@@ -43,7 +50,7 @@ adminUserSchema.pre('save', async function (next) {
 });
 
 adminUserSchema.methods.comparePassword = async function (
-  candidatePassword: string
+  candidatePassword: string,
 ): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };

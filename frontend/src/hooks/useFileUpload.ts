@@ -68,7 +68,7 @@ export const useFileUpload = ({ endpoint, onSuccess, onError }: UseFileUploadOpt
         setUploading(false);
       }
     },
-    [endpoint, onSuccess, onError]
+    [endpoint, onSuccess, onError],
   );
 
   const reset = useCallback(() => {

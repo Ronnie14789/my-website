@@ -13,7 +13,7 @@ router.post(
     body('username').trim().notEmpty().withMessage('Username required'),
     body('password').notEmpty().withMessage('Password required'),
   ],
-  login
+  login,
 );
 
 router.post('/refresh', authenticate, refreshToken);

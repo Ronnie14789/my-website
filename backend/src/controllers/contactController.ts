@@ -27,7 +27,14 @@ export const submitContact = async (req: Request, res: Response): Promise<void> 
 
     Promise.allSettled([
       emailService.sendContactConfirmation({ name, email, subject, message }),
-      emailService.sendAdminNotification({ name, email, phone, subject, message, ipAddress: req.ip }),
+      emailService.sendAdminNotification({
+        name,
+        email,
+        phone,
+        subject,
+        message,
+        ipAddress: req.ip,
+      }),
     ]).then(([confirmResult, adminResult]) => {
       const emailSent = confirmResult.status === 'fulfilled' && confirmResult.value.success;
       ContactSubmission.findByIdAndUpdate(submission._id, { emailSent }).catch(() => undefined);
@@ -40,7 +47,7 @@ export const submitContact = async (req: Request, res: Response): Promise<void> 
       res,
       { id: submission._id },
       'Message sent successfully! I will get back to you soon.',
-      201
+      201,
     );
   } catch (error) {
     logger.error('Contact submission error:', error);
@@ -98,7 +105,7 @@ export const updateContactStatus = async (req: Request, res: Response): Promise<
     const contact = await ContactSubmission.findByIdAndUpdate(
       id,
       { $set: { status: safeStatus } },
-      { new: true }
+      { new: true },
     );
 
     if (!contact) {

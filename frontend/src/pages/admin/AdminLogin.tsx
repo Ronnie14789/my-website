@@ -57,9 +57,7 @@ const AdminLogin: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-slate-300 text-sm font-medium mb-2">
-              Password
-            </label>
+            <label className="block text-slate-300 text-sm font-medium mb-2">Password</label>
             <input
               type="password"
               value={form.password}

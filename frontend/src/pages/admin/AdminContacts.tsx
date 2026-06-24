@@ -73,7 +73,10 @@ const AdminContacts: React.FC = () => {
         </select>
       </motion.div>
 
-      <motion.div variants={fadeInUp} className="overflow-hidden rounded-xl border border-slate-800 bg-dark-950">
+      <motion.div
+        variants={fadeInUp}
+        className="overflow-hidden rounded-xl border border-slate-800 bg-dark-950"
+      >
         {loading ? (
           <div className="flex h-32 items-center justify-center">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -103,13 +106,19 @@ const AdminContacts: React.FC = () => {
                       <div className="font-medium text-white">{contact.name}</div>
                       <div className="text-xs text-slate-500">{contact.email}</div>
                     </td>
-                    <td className="max-w-xs truncate px-6 py-4 text-slate-300">{contact.subject}</td>
+                    <td className="max-w-xs truncate px-6 py-4 text-slate-300">
+                      {contact.subject}
+                    </td>
                     <td className="px-6 py-4">
-                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${STATUS_COLORS[contact.status]}`}>
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-medium ${STATUS_COLORS[contact.status]}`}
+                      >
                         {contact.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-xs text-slate-400">{new Date(contact.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-xs text-slate-400">
+                      {new Date(contact.createdAt).toLocaleDateString()}
+                    </td>
                     <td className="px-6 py-4">
                       <select
                         value={contact.status}
@@ -135,7 +144,10 @@ const AdminContacts: React.FC = () => {
       </motion.div>
 
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={() => setSelected(null)}
+        >
           <motion.div
             className="w-full max-w-lg rounded-2xl border border-slate-800 bg-dark-950 p-6"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -150,7 +162,8 @@ const AdminContacts: React.FC = () => {
             </div>
             <div className="space-y-3 text-sm">
               <div>
-                <span className="text-slate-500">From:</span> <span className="text-white">{selected.name}</span>
+                <span className="text-slate-500">From:</span>{' '}
+                <span className="text-white">{selected.name}</span>
               </div>
               <div>
                 <span className="text-slate-500">Email:</span>{' '}
@@ -158,7 +171,9 @@ const AdminContacts: React.FC = () => {
                   {selected.email}
                 </a>
               </div>
-              <div className="rounded-lg bg-dark-900 p-4 leading-relaxed text-slate-300">{selected.message}</div>
+              <div className="rounded-lg bg-dark-900 p-4 leading-relaxed text-slate-300">
+                {selected.message}
+              </div>
             </div>
           </motion.div>
         </div>

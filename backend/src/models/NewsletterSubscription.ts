@@ -37,7 +37,7 @@ const newsletterSubscriptionSchema = new Schema<INewsletterSubscription>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 newsletterSubscriptionSchema.index({ email: 1 });
@@ -45,6 +45,6 @@ newsletterSubscriptionSchema.index({ status: 1 });
 
 const NewsletterSubscription: Model<INewsletterSubscription> = mongoose.model(
   'NewsletterSubscription',
-  newsletterSubscriptionSchema
+  newsletterSubscriptionSchema,
 );
 export default NewsletterSubscription;

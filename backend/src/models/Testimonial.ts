@@ -29,7 +29,7 @@ const testimonialSchema = new Schema<ITestimonial>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 testimonialSchema.index({ approved: 1, featured: -1 });

@@ -14,7 +14,7 @@ export interface AuthenticatedRequest extends Request {
 export const authenticate = (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   try {
     const authHeader = req.headers.authorization;

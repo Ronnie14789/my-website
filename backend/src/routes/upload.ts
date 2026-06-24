@@ -1,7 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import { uploadLimiter } from '../middleware/rateLimiter';
-import { upload, uploadToCloud, isCloudinaryConfigured, UploadFolder } from '../services/storageService';
+import {
+  upload,
+  uploadToCloud,
+  isCloudinaryConfigured,
+  UploadFolder,
+} from '../services/storageService';
 import { sendSuccess, sendError } from '../utils/apiResponse';
 import { logger } from '../utils/logger';
 
@@ -16,7 +21,11 @@ const handleUpload =
     }
 
     if (!isCloudinaryConfigured) {
-      sendError(res, 'Cloud storage not configured. Please set Cloudinary environment variables.', 503);
+      sendError(
+        res,
+        'Cloud storage not configured. Please set Cloudinary environment variables.',
+        503,
+      );
       return;
     }
 
@@ -36,7 +45,7 @@ const handleUpload =
           folder: result.folder,
         },
         'File uploaded successfully',
-        201
+        201,
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Upload failed';
@@ -47,7 +56,13 @@ const handleUpload =
 
 const uploadMiddleware = () => upload.single('image');
 
-router.post('/project-image', authenticate, uploadLimiter, uploadMiddleware(), handleUpload('projects'));
+router.post(
+  '/project-image',
+  authenticate,
+  uploadLimiter,
+  uploadMiddleware(),
+  handleUpload('projects'),
+);
 router.post('/blog-image', authenticate, uploadLimiter, uploadMiddleware(), handleUpload('blog'));
 router.post('/avatar', authenticate, uploadLimiter, uploadMiddleware(), handleUpload('avatars'));
 

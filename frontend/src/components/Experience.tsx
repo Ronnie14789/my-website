@@ -8,19 +8,22 @@ const EXPERIENCE = [
     title: 'Senior Technician',
     company: 'Tata Uganda Ltd',
     period: 'Current Role',
-    details: 'Supporting diagnostics, preventive maintenance, repair coordination, and technical reliability across commercial vehicle operations.',
+    details:
+      'Supporting diagnostics, preventive maintenance, repair coordination, and technical reliability across commercial vehicle operations.',
   },
   {
     title: 'Fleet Reliability Contributor',
     company: 'Workshop & Field Operations',
     period: 'Ongoing',
-    details: 'Improving service turnaround, maintenance scheduling, and fault prevention for better fleet uptime and operational continuity.',
+    details:
+      'Improving service turnaround, maintenance scheduling, and fault prevention for better fleet uptime and operational continuity.',
   },
   {
     title: 'Technology Growth Focus',
     company: 'Continuous Professional Development',
     period: 'Ongoing',
-    details: 'Expanding expertise in renewable energy, Linux systems, AI-driven workflows, and future-focused automotive technologies.',
+    details:
+      'Expanding expertise in renewable energy, Linux systems, AI-driven workflows, and future-focused automotive technologies.',
   },
 ];
 
@@ -30,9 +33,15 @@ const Experience: React.FC = () => {
   return (
     <section id="experience" ref={ref} className="bg-dark-850 py-24">
       <div className="mx-auto max-w-5xl px-6">
-        <motion.div variants={staggerContainer} initial="hidden" animate={isVisible ? 'show' : 'hidden'}>
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate={isVisible ? 'show' : 'hidden'}
+        >
           <motion.div variants={fadeInUp} className="mb-16 text-center">
-            <span className="text-sm font-medium uppercase tracking-widest text-blue-400">Experience</span>
+            <span className="text-sm font-medium uppercase tracking-widest text-blue-400">
+              Experience
+            </span>
             <h2 className="mt-2 text-4xl font-bold text-white">Professional Journey</h2>
           </motion.div>
           <div className="space-y-6">

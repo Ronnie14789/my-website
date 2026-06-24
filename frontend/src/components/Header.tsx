@@ -27,19 +27,14 @@ const Header: React.FC = () => {
   return (
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-slate-900/95 backdrop-blur-md shadow-lg shadow-black/20'
-          : 'bg-transparent'
+        scrolled ? 'bg-slate-900/95 backdrop-blur-md shadow-lg shadow-black/20' : 'bg-transparent'
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link
-          to="/"
-          className="text-xl font-bold text-white hover:text-blue-400 transition-colors"
-        >
+        <Link to="/" className="text-xl font-bold text-white hover:text-blue-400 transition-colors">
           <span className="text-blue-400">E</span>R
         </Link>
 

@@ -1,34 +1,54 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import { sendError } from '../utils/apiResponse';
 
 export interface AppError extends Error {
+  status?: number;
   statusCode?: number;
   isOperational?: boolean;
 }
 
 export const errorHandler = (
   err: AppError,
-  _req: Request,
+  req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ): void => {
-  const statusCode = err.statusCode || 500;
-  const message = err.isOperational ? err.message : 'Internal server error';
+  const statusCode = err.statusCode ?? err.status ?? 500;
+  const message = err.isOperational || statusCode < 500 ? err.message : 'Internal server error';
 
-  if (!err.isOperational) {
-    logger.error('Unexpected error:', {
-      message: err.message,
-      stack: err.stack,
-    });
+  logger.error('Request error', {
+    message: err.message,
+    stack: err.stack,
+    path: req.originalUrl,
+    method: req.method,
+    statusCode,
+  });
+
+  if (typeof sendError === 'function') {
+    sendError(res, message, statusCode);
+    return;
   }
 
-  sendError(res, message, statusCode);
+  res.status(statusCode).json({
+    success: false,
+    message,
+  });
 };
 
 export const notFound = (req: Request, res: Response): void => {
-  sendError(res, `Route ${req.originalUrl} not found`, 404);
+  if (typeof sendError === 'function') {
+    sendError(res, `Route ${req.originalUrl} not found`, 404);
+    return;
+  }
+
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.method} ${req.path} not found`,
+  });
 };
+
+export const notFoundHandler = notFound;
 
 export const createError = (message: string, statusCode: number): AppError => {
   const error: AppError = new Error(message);

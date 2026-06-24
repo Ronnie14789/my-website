@@ -26,12 +26,15 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('admin_token');
-      if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+      if (
+        window.location.pathname.startsWith('/admin') &&
+        window.location.pathname !== '/admin/login'
+      ) {
         window.location.href = '/admin/login';
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

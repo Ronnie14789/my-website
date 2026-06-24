@@ -41,7 +41,7 @@ const projectSchema = new Schema<IProject>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 projectSchema.index({ featured: -1, order: 1 });

@@ -93,12 +93,7 @@ const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="show"
-      className="space-y-8"
-    >
+    <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-8">
       <motion.div variants={fadeInUp}>
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
         <p className="text-slate-400 mt-1">Welcome back, Admin</p>
@@ -161,9 +156,7 @@ const AdminDashboard: React.FC = () => {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-48 flex items-center justify-center text-slate-500">
-              No data yet
-            </div>
+            <div className="h-48 flex items-center justify-center text-slate-500">No data yet</div>
           )}
         </motion.div>
 

@@ -6,9 +6,7 @@ interface ScrollRevealOptions {
   once?: boolean;
 }
 
-export const useScrollReveal = <T extends HTMLElement>(
-  options: ScrollRevealOptions = {}
-) => {
+export const useScrollReveal = <T extends HTMLElement>(options: ScrollRevealOptions = {}) => {
   const { threshold = 0.1, rootMargin = '0px', once = true } = options;
   const ref = useRef<T>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -30,7 +28,7 @@ export const useScrollReveal = <T extends HTMLElement>(
           setIsVisible(false);
         }
       },
-      { threshold, rootMargin }
+      { threshold, rootMargin },
     );
 
     observer.observe(element);

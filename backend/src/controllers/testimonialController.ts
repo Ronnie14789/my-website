@@ -64,7 +64,7 @@ export const updateTestimonial = async (req: Request, res: Response): Promise<vo
     const testimonial = await Testimonial.findByIdAndUpdate(
       req.params['id'],
       { $set: { name, email, company, role, content, rating, approved, featured, avatarUrl } },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
     if (!testimonial) {
       sendError(res, 'Testimonial not found', 404);
@@ -98,7 +98,7 @@ export const approveTestimonial = async (req: Request, res: Response): Promise<v
     const testimonial = await Testimonial.findByIdAndUpdate(
       req.params['id'],
       { approved: true },
-      { new: true }
+      { new: true },
     );
     if (!testimonial) {
       sendError(res, 'Testimonial not found', 404);

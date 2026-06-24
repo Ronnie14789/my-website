@@ -37,7 +37,7 @@ const blogPostSchema = new Schema<IBlogPost>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 blogPostSchema.index({ slug: 1 });

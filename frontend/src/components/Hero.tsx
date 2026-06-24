@@ -15,8 +15,7 @@ const Hero: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   const prefersReducedMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
     if (prefersReducedMotion) {
@@ -44,7 +43,7 @@ const Hero: React.FC = () => {
           }
         }
       },
-      deleting ? 50 : 80
+      deleting ? 50 : 80,
     );
 
     return () => clearTimeout(timeout);
@@ -115,9 +114,8 @@ const Hero: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            Dedicated automotive professional specializing in diagnostics, preventive
-            maintenance, diesel engine systems, fleet reliability, and emerging vehicle
-            technologies.
+            Dedicated automotive professional specializing in diagnostics, preventive maintenance,
+            diesel engine systems, fleet reliability, and emerging vehicle technologies.
           </motion.p>
 
           <motion.div

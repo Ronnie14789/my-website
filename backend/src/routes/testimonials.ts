@@ -13,7 +13,10 @@ const router = Router();
 
 const testimonialValidation = [
   body('name').trim().isLength({ min: 2, max: 100 }).withMessage('Name required'),
-  body('content').trim().isLength({ min: 10, max: 1000 }).withMessage('Content must be 10-1000 characters'),
+  body('content')
+    .trim()
+    .isLength({ min: 10, max: 1000 })
+    .withMessage('Content must be 10-1000 characters'),
   body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be 1-5'),
 ];
 

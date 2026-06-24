@@ -14,8 +14,15 @@ const router = Router();
 
 const postValidation = [
   body('title').trim().isLength({ min: 3, max: 200 }).withMessage('Title must be 3-200 characters'),
-  body('slug').optional().trim().matches(/^[a-z0-9-]+$/).withMessage('Slug must be lowercase alphanumeric with hyphens'),
-  body('excerpt').trim().isLength({ min: 10, max: 500 }).withMessage('Excerpt must be 10-500 characters'),
+  body('slug')
+    .optional()
+    .trim()
+    .matches(/^[a-z0-9-]+$/)
+    .withMessage('Slug must be lowercase alphanumeric with hyphens'),
+  body('excerpt')
+    .trim()
+    .isLength({ min: 10, max: 500 })
+    .withMessage('Excerpt must be 10-500 characters'),
   body('content').trim().notEmpty().withMessage('Content is required'),
   body('tags').optional().isArray().withMessage('Tags must be an array'),
   body('status').optional().isIn(['draft', 'published', 'archived']).withMessage('Invalid status'),

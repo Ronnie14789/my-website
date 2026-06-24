@@ -118,9 +118,7 @@ const Projects: React.FC = () => {
                 <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-300 transition-colors">
                   {project.title}
                 </h3>
-                <p className="text-slate-400 leading-relaxed mb-6">
-                  {project.shortDescription}
-                </p>
+                <p className="text-slate-400 leading-relaxed mb-6">{project.shortDescription}</p>
 
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag) => (

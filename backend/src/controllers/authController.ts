@@ -49,7 +49,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         refreshToken,
         user: { id: user._id, username: user.username, email: user.email, role: user.role },
       },
-      'Login successful'
+      'Login successful',
     );
   } catch (error) {
     logger.error('Login error:', error);

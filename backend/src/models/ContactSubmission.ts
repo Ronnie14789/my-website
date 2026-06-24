@@ -39,7 +39,7 @@ const contactSubmissionSchema = new Schema<IContactSubmission>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 contactSubmissionSchema.index({ status: 1, createdAt: -1 });
@@ -47,7 +47,7 @@ contactSubmissionSchema.index({ email: 1 });
 
 const ContactSubmission: Model<IContactSubmission> = mongoose.model(
   'ContactSubmission',
-  contactSubmissionSchema
+  contactSubmissionSchema,
 );
 
 export default ContactSubmission;

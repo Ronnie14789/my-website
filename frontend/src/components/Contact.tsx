@@ -33,8 +33,7 @@ const Contact: React.FC = () => {
     const newErrors: FormErrors = {};
     if (!form.name || form.name.trim().length < 2)
       newErrors.name = 'Name must be at least 2 characters';
-    if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email))
-      newErrors.email = 'Valid email required';
+    if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = 'Valid email required';
     if (!form.subject || form.subject.trim().length < 5)
       newErrors.subject = 'Subject must be at least 5 characters';
     if (!form.message || form.message.trim().length < 10)
@@ -55,17 +54,14 @@ const Contact: React.FC = () => {
     } catch (err: unknown) {
       const errResponse = err as { response?: { data?: { message?: string } } };
       toast.error(
-        errResponse?.response?.data?.message ||
-          'Failed to send message. Please try again.'
+        errResponse?.response?.data?.message || 'Failed to send message. Please try again.',
       );
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
     if (errors[name as keyof FormData]) {
@@ -211,9 +207,7 @@ const Contact: React.FC = () => {
                 ))}
 
                 <div>
-                  <label className="block text-slate-300 text-sm font-medium mb-2">
-                    Message *
-                  </label>
+                  <label className="block text-slate-300 text-sm font-medium mb-2">Message *</label>
                   <motion.textarea
                     name="message"
                     value={form.message}
@@ -244,11 +238,7 @@ const Contact: React.FC = () => {
                 >
                   {submitting ? (
                     <span className="flex items-center justify-center gap-2">
-                      <svg
-                        className="animate-spin w-5 h-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
+                      <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
                         <circle
                           className="opacity-25"
                           cx="12"

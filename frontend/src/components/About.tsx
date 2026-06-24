@@ -34,14 +34,14 @@ const About: React.FC = () => {
             <motion.div variants={fadeInLeft}>
               <p className="text-slate-400 text-lg leading-relaxed mb-6">
                 I am a professional Technician at{' '}
-                <span className="text-blue-400 font-semibold">Tata Uganda Ltd</span> with
-                extensive experience in commercial vehicle maintenance, troubleshooting,
-                diagnostics, fleet support, and comprehensive workshop management.
+                <span className="text-blue-400 font-semibold">Tata Uganda Ltd</span> with extensive
+                experience in commercial vehicle maintenance, troubleshooting, diagnostics, fleet
+                support, and comprehensive workshop management.
               </p>
               <p className="text-slate-400 text-lg leading-relaxed">
                 My passion extends beyond hands-on maintenance into emerging technologies,
-                artificial intelligence, Linux systems administration, renewable energy
-                solutions, and continuous professional growth in the automotive industry.
+                artificial intelligence, Linux systems administration, renewable energy solutions,
+                and continuous professional growth in the automotive industry.
               </p>
             </motion.div>
 

@@ -112,7 +112,11 @@ class EmailService {
       };
 
       const messageId = await this.sendWithRetry(mailOptions);
-      logger.info('Email sent successfully', { messageId, to: options.to, subject: options.subject });
+      logger.info('Email sent successfully', {
+        messageId,
+        to: options.to,
+        subject: options.subject,
+      });
       return { success: true, messageId };
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : 'Unknown error';
@@ -201,8 +205,8 @@ class EmailService {
             unsubscribeUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/unsubscribe?token=${subscriber.unsubscribeToken}`,
             year: new Date().getFullYear(),
           },
-        })
-      )
+        }),
+      ),
     );
 
     const failed = results.filter((result) => result.status === 'rejected').length;

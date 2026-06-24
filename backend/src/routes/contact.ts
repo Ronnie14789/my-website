@@ -10,8 +10,14 @@ const contactValidation = [
   body('name').trim().isLength({ min: 2, max: 100 }).withMessage('Name must be 2-100 characters'),
   body('email').trim().isEmail().normalizeEmail().withMessage('Valid email required'),
   body('phone').optional().trim().isMobilePhone('any').withMessage('Invalid phone number'),
-  body('subject').trim().isLength({ min: 5, max: 200 }).withMessage('Subject must be 5-200 characters'),
-  body('message').trim().isLength({ min: 10, max: 5000 }).withMessage('Message must be 10-5000 characters'),
+  body('subject')
+    .trim()
+    .isLength({ min: 5, max: 200 })
+    .withMessage('Subject must be 5-200 characters'),
+  body('message')
+    .trim()
+    .isLength({ min: 10, max: 5000 })
+    .withMessage('Message must be 10-5000 characters'),
 ];
 
 router.post('/', contactLimiter, contactValidation, submitContact);
