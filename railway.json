@@ -1,6 +1,6 @@
 {
   "build": {
-    "builder": "nixpacks"
+    "builder": "DOCKERFILE"
   },
   "deploy": {
     "numReplicas": 1,
