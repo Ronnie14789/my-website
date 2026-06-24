@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
+import path from 'path';
 import { generalLimiter } from './middleware/rateLimiter';
 import { errorHandler, notFound } from './middleware/errorHandler';
 import { monitoringMiddleware } from './middleware/monitoring';
@@ -87,6 +88,14 @@ const createApp = (): Application => {
   app.use('/api/testimonials', testimonialRoutes);
   app.use('/api/upload', uploadRoutes);
   app.use('/api/analytics', analyticsRoutes);
+
+  if (process.env.NODE_ENV === 'production') {
+    const frontendDist = path.join(__dirname, '..', '..', 'frontend', 'dist');
+    app.use(express.static(frontendDist));
+    app.get('*', generalLimiter, (_req, res) => {
+      res.sendFile(path.join(frontendDist, 'index.html'));
+    });
+  }
 
   app.use(notFound);
   sentryErrorHandler(app);
