@@ -1,60 +1,38 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Testimonial:
- *       type: object
- *       required: [name, role, company, message, rating]
- *       properties:
- *         _id:
- *           type: string
- *         name:
- *           type: string
- *         role:
- *           type: string
- *         company:
- *           type: string
- *         message:
- *           type: string
- *         rating:
- *           type: number
- *           minimum: 1
- *           maximum: 5
- *         avatarUrl:
- *           type: string
- *         approved:
- *           type: boolean
- *         createdAt:
- *           type: string
- *           format: date-time
- */
 export interface ITestimonial extends Document {
   name: string;
-  role: string;
-  company: string;
-  message: string;
+  email?: string;
+  company?: string;
+  role?: string;
+  content: string;
   rating: number;
-  avatarUrl?: string;
   approved: boolean;
+  featured: boolean;
+  avatarUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const TestimonialSchema = new Schema<ITestimonial>(
+const testimonialSchema = new Schema<ITestimonial>(
   {
     name: { type: String, required: true, trim: true, maxlength: 100 },
-    role: { type: String, required: true, trim: true, maxlength: 100 },
-    company: { type: String, required: true, trim: true, maxlength: 100 },
-    message: { type: String, required: true, trim: true, maxlength: 1000 },
-    rating: { type: Number, required: true, min: 1, max: 5 },
-    avatarUrl: { type: String },
+    email: { type: String, trim: true, lowercase: true },
+    company: { type: String, trim: true, maxlength: 100 },
+    role: { type: String, trim: true, maxlength: 100 },
+    content: { type: String, required: true, trim: true, maxlength: 1000 },
+    rating: { type: Number, min: 1, max: 5, required: true, default: 5 },
     approved: { type: Boolean, default: false },
+    featured: { type: Boolean, default: false },
+    avatarUrl: { type: String },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
 
-TestimonialSchema.index({ approved: 1, createdAt: -1 });
+testimonialSchema.index({ approved: 1, featured: -1 });
 
-export default model<ITestimonial>('Testimonial', TestimonialSchema);
+const Testimonial: Model<ITestimonial> = mongoose.model('Testimonial', testimonialSchema);
+export default Testimonial;

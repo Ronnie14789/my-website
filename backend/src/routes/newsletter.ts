@@ -1,32 +1,28 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { newsletterLimiter } from '../middleware/rateLimiter';
+import { authenticate } from '../middleware/auth';
 import {
   subscribe,
   unsubscribe,
   listSubscribers,
-  exportSubscribersCsv,
-  updateSubscriberStatus,
+  deleteSubscriber,
 } from '../controllers/newsletterController';
-import { validateRequest } from '../middleware/validateRequest';
-import { newsletterLimiter } from '../middleware/rateLimiter';
-import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-const emailValidation = [
-  body('email').isEmail().normalizeEmail().withMessage('Valid email address required'),
+const subscribeValidation = [
+  body('email').trim().isEmail().normalizeEmail().withMessage('Valid email required'),
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be 2-100 characters'),
 ];
 
-router.post('/subscribe', newsletterLimiter, emailValidation, validateRequest, subscribe);
-router.post('/unsubscribe', emailValidation, validateRequest, unsubscribe);
+router.post('/subscribe', newsletterLimiter, subscribeValidation, subscribe);
+router.get('/unsubscribe', unsubscribe);
 router.get('/', authenticate, listSubscribers);
-router.get('/export', authenticate, exportSubscribersCsv);
-router.patch(
-  '/:id/status',
-  authenticate,
-  [body('active').isBoolean().withMessage('Active must be a boolean value')],
-  validateRequest,
-  updateSubscriberStatus,
-);
+router.delete('/:id', authenticate, deleteSubscriber);
 
 export default router;

@@ -1,74 +1,51 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Project:
- *       type: object
- *       required: [title, description]
- *       properties:
- *         _id:
- *           type: string
- *         title:
- *           type: string
- *         description:
- *           type: string
- *         longDescription:
- *           type: string
- *         tags:
- *           type: array
- *           items:
- *             type: string
- *         imageUrl:
- *           type: string
- *         liveUrl:
- *           type: string
- *         githubUrl:
- *           type: string
- *         featured:
- *           type: boolean
- *         order:
- *           type: number
- *         status:
- *           type: string
- *           enum: [active, completed, archived]
- *         createdAt:
- *           type: string
- *           format: date-time
- */
 export interface IProject extends Document {
   title: string;
   description: string;
-  longDescription?: string;
+  shortDescription: string;
+  coverImage?: string;
+  images: string[];
   tags: string[];
-  imageUrl?: string;
-  liveUrl?: string;
-  githubUrl?: string;
+  technologies: string[];
+  status: 'active' | 'completed' | 'archived';
   featured: boolean;
   order: number;
-  status: 'active' | 'completed' | 'archived';
+  githubUrl?: string;
+  liveUrl?: string;
+  views: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const ProjectSchema = new Schema<IProject>(
+const projectSchema = new Schema<IProject>(
   {
     title: { type: String, required: true, trim: true, maxlength: 200 },
-    description: { type: String, required: true, trim: true, maxlength: 1000 },
-    longDescription: { type: String },
+    description: { type: String, required: true },
+    shortDescription: { type: String, required: true, maxlength: 300 },
+    coverImage: { type: String },
+    images: [{ type: String }],
     tags: [{ type: String, trim: true }],
-    imageUrl: { type: String },
-    liveUrl: { type: String },
-    githubUrl: { type: String },
+    technologies: [{ type: String, trim: true }],
+    status: {
+      type: String,
+      enum: ['active', 'completed', 'archived'],
+      default: 'active',
+    },
     featured: { type: Boolean, default: false },
     order: { type: Number, default: 0 },
-    status: { type: String, enum: ['active', 'completed', 'archived'], default: 'active' },
+    githubUrl: { type: String },
+    liveUrl: { type: String },
+    views: { type: Number, default: 0 },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
 
-ProjectSchema.index({ featured: 1, order: 1 });
-ProjectSchema.index({ status: 1 });
+projectSchema.index({ featured: -1, order: 1 });
+projectSchema.index({ status: 1 });
 
-export default model<IProject>('Project', ProjectSchema);
+const Project: Model<IProject> = mongoose.model('Project', projectSchema);
+export default Project;

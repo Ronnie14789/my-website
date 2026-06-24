@@ -1,201 +1,231 @@
-# Ecatu Ronald – Professional Portfolio
+# Ecatu Ronald - Portfolio Website v2.0
 
-A premium full-stack portfolio website for **Ecatu Ronald**, Senior Automotive Technician at Tata Uganda Ltd.
+A full-stack, enterprise-grade portfolio website for Ecatu Ronald — Senior Technician at Tata Uganda Ltd. Built with React, Express, TypeScript, MongoDB, and Redis.
 
-## Tech Stack
+## 🚀 Features
 
-| Layer    | Technology                                                       |
-| -------- | ---------------------------------------------------------------- |
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS, React Router v6, Axios |
-| Backend  | Node.js, Express 4, TypeScript, Mongoose                         |
-| Database | MongoDB 7                                                        |
-| DevOps   | Docker, Docker Compose, Nginx                                    |
-| Quality  | ESLint, Prettier, Husky, lint-staged                             |
-| API Docs | Swagger / OpenAPI 3.0                                            |
+### Frontend
 
-## Project Structure
+- **React 18** + TypeScript + Vite
+- **Framer Motion** animations — typing effect, parallax, stagger reveals, page transitions
+- **Tailwind CSS** dark-theme design system
+- **Admin Dashboard** — CRUD for all content with real-time analytics charts
+- **GA4 Analytics** — page views, custom events, session tracking
+- **Code splitting** — lazy-loaded routes for performance
+
+### Backend
+
+- **Express** + TypeScript REST API
+- **MongoDB** — 6 Mongoose models with full TypeScript support
+- **Email Service** — Nodemailer with HTML templates (Handlebars)
+- **File Uploads** — Multer + Cloudinary with type/size validation
+- **Redis Caching** — blog posts (1hr), projects (30min), testimonials (6hr)
+- **JWT Authentication** — admin-protected routes
+- **Rate Limiting** — tiered (general / contact / newsletter / auth)
+- **Security** — Helmet headers, CORS, NoSQL injection prevention
+
+## 📁 Project Structure
 
 ```
 my-website/
-├── frontend/               # React + TypeScript + Vite
+├── backend/                    # Express/TypeScript API
 │   ├── src/
-│   │   ├── api/            # Axios client & API endpoints
-│   │   ├── components/     # UI components (Header, Hero, …)
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── contexts/       # Theme, auth, and toast state
-│   │   ├── pages/          # Page components (Home, Admin, NotFound)
-│   │   └── types/          # TypeScript type definitions
+│   │   ├── config/             # Database, Redis
+│   │   ├── controllers/        # Request handlers
+│   │   ├── middleware/         # Auth, rate limiting, error handling
+│   │   ├── models/             # Mongoose schemas
+│   │   ├── routes/             # API routes
+│   │   ├── services/           # Email & storage services
+│   │   ├── templates/          # Handlebars email templates
+│   │   ├── utils/              # Logger, API responses
+│   │   ├── app.ts              # Express app factory
+│   │   └── server.ts           # Entry point
+│   ├── .env.example
 │   ├── Dockerfile
-│   ├── public/             # PWA manifest + service worker
-│   └── nginx.conf
-│
-├── backend/                # Express + TypeScript API
+│   └── package.json
+├── frontend/                   # React/TypeScript/Vite SPA
 │   ├── src/
-│   │   ├── config/         # DB connection, Swagger config
-│   │   ├── controllers/    # Route handler logic
-│   │   ├── middleware/     # Auth, rate limiting, error handling
-│   │   ├── models/         # Mongoose schemas
-│   │   ├── routes/         # Express route definitions
-│   │   └── utils/          # Logger + sanitizers
-│   └── Dockerfile
-│
-├── docker-compose.yml      # Production Docker Compose
-├── docker-compose.dev.yml  # Development Docker Compose
-├── .env.example            # Environment variable template
-└── package.json            # Root scripts & Husky config
+│   │   ├── components/         # Hero, About, Projects, Contact, Header...
+│   │   ├── hooks/              # useScrollReveal, useFileUpload, useStaggerAnimation
+│   │   ├── lib/                # Axios API client
+│   │   ├── pages/              # Home, NotFound, Admin pages
+│   │   └── App.tsx
+│   ├── nginx.conf              # Production Nginx config
+│   ├── Dockerfile
+│   └── package.json
+├── docker-compose.yml          # Production stack
+├── docker-compose.dev.yml      # Local dev (MongoDB + Redis only)
+└── .env.example
 ```
 
-## Quick Start
+## ⚡ Quick Start
 
-### 1. Prerequisites
+### Prerequisites
 
-- Node.js 22+
-- MongoDB 7 (or Docker)
-- npm 10+
+- Node.js 20+
+- MongoDB (local or Atlas)
+- Redis (optional — falls back to in-memory cache)
 
-### 2. Environment Setup
+### 1. Clone & Install
 
 ```bash
-cp .env.example backend/.env
+# Install root dev tools
+npm install
+
+# Install backend
+cd backend && npm install
+
+# Install frontend
+cd ../frontend && npm install
+```
+
+### 2. Configure Environment
+
+```bash
+cp backend/.env.example backend/.env
 # Edit backend/.env with your values
 ```
 
-### 3. Frontend (Dev)
+### 3. Start Development
 
 ```bash
-cd frontend
-npm install
+# Terminal 1 - Start backend (port 3001)
+cd backend && npm run dev
+
+# Terminal 2 - Start frontend (port 5173)
+cd frontend && npm run dev
+```
+
+Or from root:
+
+```bash
 npm run dev
-# App runs at http://localhost:3000
 ```
 
-### 4. Backend (Dev)
+## 🐳 Docker (Production)
 
 ```bash
-cd backend
-npm install
-npm run dev
-# API runs at http://localhost:5000
-# Swagger docs at http://localhost:5000/api/docs
-```
+# Copy and configure environment
+cp backend/.env.example backend/.env
 
-### 4.1 Admin Credentials
+# Start full stack (MongoDB + Redis + backend + frontend)
+docker-compose up --build
 
-Set the admin email and bcrypt password hash in `.env` before using `/admin/login`:
-
-```bash
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD_HASH=...
-```
-
-### 5. Docker (Full Stack)
-
-**Development:**
-
-```bash
+# Development (databases only)
 npm run docker:dev
-# Frontend: http://localhost:3000
-# Backend:  http://localhost:5000
-# MongoDB:  mongodb://localhost:27017
 ```
 
-**Production:**
+Access:
+
+- **Frontend**: http://localhost:80
+- **Backend API**: http://localhost:3001/api
+- **Health check**: http://localhost:3001/api/health
+
+## 🔑 API Endpoints
+
+| Method | Endpoint                        | Auth | Description                |
+| ------ | ------------------------------- | ---- | -------------------------- |
+| GET    | `/api/health`                   | —    | Health check               |
+| POST   | `/api/auth/login`               | —    | Admin login                |
+| GET    | `/api/contact`                  | ✅   | List submissions           |
+| POST   | `/api/contact`                  | —    | Submit contact form        |
+| GET    | `/api/blog`                     | —    | List published posts       |
+| GET    | `/api/blog/:slug`               | —    | Get post by slug           |
+| POST   | `/api/blog`                     | ✅   | Create post                |
+| PUT    | `/api/blog/:id`                 | ✅   | Update post                |
+| DELETE | `/api/blog/:id`                 | ✅   | Delete post                |
+| GET    | `/api/projects`                 | —    | List projects              |
+| POST   | `/api/projects`                 | ✅   | Create project             |
+| GET    | `/api/testimonials`             | —    | List approved testimonials |
+| POST   | `/api/testimonials`             | —    | Submit testimonial         |
+| PATCH  | `/api/testimonials/:id/approve` | ✅   | Approve testimonial        |
+| POST   | `/api/newsletter/subscribe`     | —    | Subscribe to newsletter    |
+| GET    | `/api/newsletter/unsubscribe`   | —    | Unsubscribe via token      |
+| POST   | `/api/upload/project-image`     | ✅   | Upload project image       |
+| POST   | `/api/upload/blog-image`        | ✅   | Upload blog image          |
+| POST   | `/api/upload/avatar`            | ✅   | Upload avatar              |
+| GET    | `/api/analytics/dashboard`      | ✅   | Dashboard stats            |
+
+## 📧 Email Setup
+
+Supports Gmail, SendGrid, Mailgun via SMTP:
+
+**Gmail:**
+
+1. Enable 2FA on your Google account
+2. Generate an App Password: Google Account → Security → App Passwords
+3. Set `SMTP_USER=your@gmail.com` and `SMTP_PASS=your-app-password`
+
+**SendGrid:**
+
+```
+SMTP_HOST=smtp.sendgrid.net
+SMTP_PORT=587
+SMTP_USER=apikey
+SMTP_PASS=your-sendgrid-api-key
+```
+
+## 🖼️ File Uploads (Cloudinary)
+
+1. Create a free account at [cloudinary.com](https://cloudinary.com)
+2. Get your Cloud Name, API Key, and API Secret from the dashboard
+3. Set the `CLOUDINARY_*` variables in `backend/.env`
+
+## 🔐 Admin Setup
+
+Create the first admin user via MongoDB shell or directly:
+
+```javascript
+// In MongoDB shell
+use mywebsite
+db.adminusers.insertOne({
+  username: "admin",
+  email: "ronaldecatu@gmail.com",
+  password: "$2a$12$...", // bcrypt hash of your password
+  role: "superadmin",
+  isActive: true,
+  createdAt: new Date()
+})
+```
+
+Or use bcrypt to generate a hash:
 
 ```bash
-# Copy and fill env vars
-cp .env.example .env
-# Edit JWT_SECRET, MONGO_ROOT_PASSWORD etc.
-
-npm run docker:prod
-# Site: http://localhost
-# API docs: http://localhost/api/docs
+node -e "const b=require('bcryptjs');b.hash('yourPassword',12).then(h=>console.log(h))"
 ```
 
-## API Endpoints
+## 🏗️ Build for Production
 
-| Method | Endpoint                    | Description                    | Auth  |
-| ------ | --------------------------- | ------------------------------ | ----- |
-| GET    | /api/health                 | Health check                   | ✗     |
-| POST   | /api/contact                | Submit contact form            | ✗     |
-| GET    | /api/contact                | List contact submissions       | Admin |
-| PATCH  | /api/contact/:id/status     | Update contact status          | Admin |
-| PATCH  | /api/contact/bulk-status    | Bulk-update contact status     | Admin |
-| GET    | /api/projects               | List projects                  | ✗     |
-| POST   | /api/projects               | Create project                 | Admin |
-| PATCH  | /api/projects/:id           | Update project                 | Admin |
-| DELETE | /api/projects/:id           | Delete project                 | Admin |
-| GET    | /api/projects/:id           | Get project by ID              | ✗     |
-| GET    | /api/blog                   | List published posts           | ✗     |
-| POST   | /api/blog                   | Create blog post               | Admin |
-| PATCH  | /api/blog/:id               | Update blog post               | Admin |
-| DELETE | /api/blog/:id               | Delete blog post               | Admin |
-| GET    | /api/blog/:slug             | Get post by slug               | ✗     |
-| GET    | /api/testimonials           | List testimonials              | ✗     |
-| GET    | /api/testimonials/admin     | List all testimonials          | Admin |
-| POST   | /api/testimonials           | Create testimonial             | Admin |
-| PATCH  | /api/testimonials/:id       | Update testimonial             | Admin |
-| DELETE | /api/testimonials/:id       | Delete testimonial             | Admin |
-| POST   | /api/newsletter/subscribe   | Subscribe to newsletter        | ✗     |
-| POST   | /api/newsletter/unsubscribe | Unsubscribe from newsletter    | ✗     |
-| GET    | /api/newsletter             | List subscribers               | Admin |
-| GET    | /api/newsletter/export      | Export subscribers CSV         | Admin |
-| PATCH  | /api/newsletter/:id/status  | Activate/deactivate subscriber | Admin |
-| POST   | /api/auth/login             | Admin sign-in                  | ✗     |
-| GET    | /api/auth/me                | Current admin session          | Admin |
-| GET    | /api/admin/overview         | Dashboard overview metrics     | Admin |
+```bash
+# Build backend
+cd backend && npm run build
 
-Full interactive documentation is available at `/api/docs` (Swagger UI).
+# Build frontend
+cd frontend && npm run build
 
-## Available Scripts
+# Or both from root
+npm run build
+```
 
-From the **repository root**:
+## 📊 Performance
 
-| Script                 | Description                       |
-| ---------------------- | --------------------------------- |
-| `npm run dev:frontend` | Start frontend dev server         |
-| `npm run dev:backend`  | Start backend dev server          |
-| `npm run build`        | Build both frontend & backend     |
-| `npm run lint`         | Lint both frontend & backend      |
-| `npm run format`       | Format all files with Prettier    |
-| `npm run docker:dev`   | Start full stack in Docker (dev)  |
-| `npm run docker:prod`  | Start full stack in Docker (prod) |
-| `npm run docker:down`  | Stop Docker containers            |
+- **Lighthouse Score**: 90+ target
+- **Caching**: Redis with in-memory fallback
+- **Code Splitting**: Lazy-loaded admin routes
+- **Images**: Cloudinary CDN with auto-optimization
+- **Animations**: GPU-accelerated transforms, `prefers-reduced-motion` respected
 
-## Security Features
+## 🔒 Security
 
-- **Helmet** – security HTTP headers
-- **CORS** – origin whitelist configurable via `.env`
-- **Rate Limiting** – general (100 req/15 min), contact (5/hr), newsletter (3/hr)
-- **JWT** – token-based authentication for admin endpoints
-- **Input Validation** – express-validator on all POST routes
-- **Input Sanitization** – trims and strips angle brackets before persistence
-- **Request Size Limit** – 10 KB max body
+- JWT authentication for admin routes
+- Helmet.js security headers
+- CORS origin whitelist
+- Input validation (express-validator)
+- Rate limiting (tiered per endpoint type)
+- File type/size validation for uploads
+- NoSQL injection prevention
+- bcrypt password hashing (12 rounds)
 
-## Phase 2 Highlights
+---
 
-- JWT-protected `/admin` dashboard with overview cards, contact inbox workflows, and newsletter export
-- Dark/light theme toggle with localStorage persistence and system preference fallback
-- Toast notifications, loading states, and an application-level error boundary
-- Route-based lazy loading for admin and public pages
-- Progressive Web App assets via `manifest.webmanifest` and `public/sw.js`
-
-## Database Schemas
-
-| Collection                | Purpose                                |
-| ------------------------- | -------------------------------------- |
-| `contactsubmissions`      | Contact form submissions with status   |
-| `blogposts`               | Blog articles with slug, tags, views   |
-| `projects`                | Portfolio projects with tags and links |
-| `testimonials`            | Client testimonials (moderation flow)  |
-| `newslettersubscriptions` | Email subscriptions with unsub support |
-
-## Environment Variables
-
-See [`.env.example`](.env.example) for all available configuration options.
-
-## Author
-
-**Ecatu Ronald** – Senior Automotive Technician  
-📧 ronaldecatu@gmail.com  
-📞 +256 780 697 149  
-🏢 Tata Uganda Ltd
+Built with ❤️ by [Ecatu Ronald](mailto:ronaldecatu@gmail.com) — Tata Uganda Ltd

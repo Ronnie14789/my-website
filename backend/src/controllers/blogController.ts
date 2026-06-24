@@ -1,197 +1,208 @@
 import { Request, Response } from 'express';
+import { validationResult } from 'express-validator';
 import BlogPost from '../models/BlogPost';
-import logger from '../utils/logger';
-import { sanitizeOptionalString, sanitizeString, sanitizeStringArray } from '../utils/sanitize';
+import NewsletterSubscription from '../models/NewsletterSubscription';
+import { emailService } from '../services/emailService';
+import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from '../config/redis';
+import { sendSuccess, sendError } from '../utils/apiResponse';
+import { logger } from '../utils/logger';
 
-interface BlogPostBody {
-  title?: string;
-  slug?: string;
-  excerpt?: string;
-  content?: string;
-  coverImage?: string;
-  tags?: string[];
-  published?: boolean;
-}
+const CACHE_TTL = 60 * 60;
 
-function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-/**
- * @swagger
- * /blog:
- *   get:
- *     tags: [Blog]
- *     summary: Get published blog posts
- *     parameters:
- *       - in: query
- *         name: tag
- *         schema:
- *           type: string
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: List of blog posts
- */
-export async function getPosts(req: Request, res: Response): Promise<void> {
+export const listPosts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const tag = typeof req.query.tag === 'string' ? req.query.tag.trim() : undefined;
-    const search = typeof req.query.q === 'string' ? sanitizeString(req.query.q).toLowerCase() : '';
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 10));
+    const page = Math.max(1, parseInt((req.query['page'] as string) || '1', 10));
+    const limit = Math.min(20, Math.max(1, parseInt((req.query['limit'] as string) || '10', 10)));
+    const tag = req.query['tag'] as string;
+    const search = req.query['search'] as string;
 
-    const filter: Record<string, unknown> = { published: true };
-    if (tag) filter.tags = tag;
-    if (search) {
-      const regex = new RegExp(escapeRegex(search), 'i');
-      filter.$or = [{ title: regex }, { excerpt: regex }, { content: regex }, { tags: regex }];
+    const cacheKey = `blog:list:${page}:${limit}:${tag || ''}:${search || ''}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) {
+      res.json(JSON.parse(cached));
+      return;
     }
 
-    const skip = (page - 1) * limit;
+    const filter: Record<string, unknown> = { status: 'published' };
+    if (tag) filter['tags'] = { $in: [tag.toLowerCase()] };
+    if (search) {
+      filter['$or'] = [
+        { title: { $regex: search, $options: 'i' } },
+        { excerpt: { $regex: search, $options: 'i' } },
+      ];
+    }
 
     const [posts, total] = await Promise.all([
-      BlogPost.find(filter, '-content').sort({ publishedAt: -1 }).skip(skip).limit(limit),
+      BlogPost.find(filter)
+        .sort({ publishedAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .select('-content')
+        .lean(),
       BlogPost.countDocuments(filter),
     ]);
 
-    res.json({
+    const response = {
       success: true,
-      message: 'Posts fetched',
-      data: { posts, pagination: { total, page, pages: Math.ceil(total / limit) } },
-    });
-  } catch (error) {
-    logger.error('Get posts error:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch posts' });
-  }
-}
+      data: posts,
+      message: 'Posts retrieved',
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+    };
 
-/**
- * @swagger
- * /blog/{slug}:
- *   get:
- *     tags: [Blog]
- *     summary: Get blog post by slug
- *     parameters:
- *       - in: path
- *         name: slug
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Blog post found
- *       404:
- *         description: Not found
- */
-export async function getPostBySlug(req: Request, res: Response): Promise<void> {
+    await cacheSet(cacheKey, JSON.stringify(response), CACHE_TTL);
+    res.json(response);
+  } catch (error) {
+    logger.error('List posts error:', error);
+    sendError(res, 'Failed to retrieve posts', 500);
+  }
+};
+
+export const getPost = async (req: Request, res: Response): Promise<void> => {
   try {
-    const post = await BlogPost.findOne({ slug: req.params.slug, published: true });
-    if (!post) {
-      res.status(404).json({ success: false, message: 'Post not found' });
+    const { slug } = req.params;
+    const cacheKey = `blog:post:${slug}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) {
+      res.json(JSON.parse(cached));
       return;
     }
-    // Increment views
-    await BlogPost.findByIdAndUpdate(post._id, { $inc: { views: 1 } });
-    const relatedPosts = await BlogPost.find({
-      _id: { $ne: post._id },
-      published: true,
-      ...(post.tags.length > 0 ? { tags: { $in: post.tags } } : {}),
-    })
-      .sort({ publishedAt: -1 })
-      .limit(3)
-      .select('-content');
 
-    res.json({
-      success: true,
-      message: 'Post found',
-      data: {
-        post,
-        relatedPosts,
-      },
-    });
+    const post = await BlogPost.findOne({ slug, status: 'published' }).lean();
+    if (!post) {
+      sendError(res, 'Post not found', 404);
+      return;
+    }
+
+    const response = { success: true, data: post, message: 'Post retrieved' };
+    await cacheSet(cacheKey, JSON.stringify(response), CACHE_TTL);
+    res.json(response);
   } catch (error) {
-    logger.error('Get post by slug error:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch post' });
+    logger.error('Get post error:', error);
+    sendError(res, 'Failed to retrieve post', 500);
   }
-}
+};
 
-export async function createPost(req: Request, res: Response): Promise<void> {
+export const incrementViews = async (req: Request, res: Response): Promise<void> => {
   try {
-    const body = req.body as BlogPostBody;
+    await BlogPost.findByIdAndUpdate(req.params['id'], { $inc: { views: 1 } });
+    sendSuccess(res, null, 'View counted');
+  } catch (error) {
+    logger.error('Track view error:', error);
+    sendError(res, 'Failed to track view', 500);
+  }
+};
+
+export const createPost = async (req: Request, res: Response): Promise<void> => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    sendError(res, 'Validation failed', 422, JSON.stringify(errors.array()));
+    return;
+  }
+
+  try {
+    const { title, slug, excerpt, content, featuredImage, tags, status } = req.body;
+
+    const autoSlug =
+      slug ||
+      title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+    const existing = await BlogPost.findOne({ slug: { $eq: autoSlug } });
+    if (existing) {
+      sendError(res, 'A post with this slug already exists', 409);
+      return;
+    }
+
     const post = await BlogPost.create({
-      title: sanitizeString(String(body.title)),
-      slug: sanitizeString(String(body.slug)).toLowerCase(),
-      excerpt: sanitizeString(String(body.excerpt)),
-      content: sanitizeString(String(body.content)),
-      coverImage: sanitizeOptionalString(body.coverImage),
-      tags: sanitizeStringArray(body.tags, true),
-      published: body.published === true,
-      readTime: Math.max(
-        1,
-        Math.ceil(sanitizeString(String(body.content)).split(/\s+/).length / 200),
-      ),
+      title,
+      slug: autoSlug,
+      excerpt,
+      content,
+      featuredImage,
+      tags,
+      status,
     });
 
-    res.status(201).json({ success: true, message: 'Post created.', data: post });
+    await cacheDelPattern('blog:list:*');
+
+    if (post.status === 'published') {
+      const subscribers = await NewsletterSubscription.find({ status: 'active' })
+        .select('email name unsubscribeToken')
+        .lean();
+      if (subscribers.length > 0) {
+        emailService
+          .sendBlogNotification({
+            post: {
+              title: post.title,
+              slug: post.slug,
+              excerpt: post.excerpt,
+              featuredImage: post.featuredImage,
+            },
+            subscribers,
+          })
+          .catch(() => undefined);
+      }
+    }
+
+    sendSuccess(res, post, 'Post created', 201);
   } catch (error) {
     logger.error('Create post error:', error);
-    res.status(500).json({ success: false, message: 'Failed to create post.' });
+    sendError(res, 'Failed to create post', 500);
   }
-}
+};
 
-export async function updatePost(req: Request, res: Response): Promise<void> {
+export const updatePost = async (req: Request, res: Response): Promise<void> => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    sendError(res, 'Validation failed', 422, JSON.stringify(errors.array()));
+    return;
+  }
+
   try {
-    const body = req.body as BlogPostBody;
-    const update: Record<string, unknown> = {};
+    const { title, slug, excerpt, content, featuredImage, tags, status } = req.body as {
+      title?: string;
+      slug?: string;
+      excerpt?: string;
+      content?: string;
+      featuredImage?: string;
+      tags?: string[];
+      status?: string;
+    };
 
-    if (body.title !== undefined) update.title = sanitizeString(body.title);
-    if (body.slug !== undefined) update.slug = sanitizeString(body.slug).toLowerCase();
-    if (body.excerpt !== undefined) update.excerpt = sanitizeString(body.excerpt);
-    if (body.content !== undefined) {
-      update.content = sanitizeString(body.content);
-      update.readTime = Math.max(
-        1,
-        Math.ceil(sanitizeString(body.content).split(/\s+/).length / 200),
-      );
-    }
-    if (body.coverImage !== undefined) update.coverImage = sanitizeOptionalString(body.coverImage);
-    if (body.tags !== undefined) update.tags = sanitizeStringArray(body.tags, true);
-    if (body.published !== undefined) update.published = body.published === true;
+    const post = await BlogPost.findByIdAndUpdate(
+      req.params['id'],
+      { $set: { title, slug, excerpt, content, featuredImage, tags, status } },
+      { new: true, runValidators: true },
+    );
 
-    const post = await BlogPost.findByIdAndUpdate(req.params.id, update, {
-      new: true,
-      runValidators: true,
-    });
     if (!post) {
-      res.status(404).json({ success: false, message: 'Post not found.' });
+      sendError(res, 'Post not found', 404);
       return;
     }
 
-    res.json({ success: true, message: 'Post updated.', data: post });
+    await Promise.all([cacheDelPattern('blog:list:*'), cacheDel(`blog:post:${post.slug}`)]);
+
+    sendSuccess(res, post, 'Post updated');
   } catch (error) {
     logger.error('Update post error:', error);
-    res.status(500).json({ success: false, message: 'Failed to update post.' });
+    sendError(res, 'Failed to update post', 500);
   }
-}
+};
 
-export async function deletePost(req: Request, res: Response): Promise<void> {
+export const deletePost = async (req: Request, res: Response): Promise<void> => {
   try {
-    const post = await BlogPost.findByIdAndDelete(req.params.id);
+    const post = await BlogPost.findByIdAndDelete(req.params['id']);
     if (!post) {
-      res.status(404).json({ success: false, message: 'Post not found.' });
+      sendError(res, 'Post not found', 404);
       return;
     }
 
-    res.json({ success: true, message: 'Post deleted.' });
+    await Promise.all([cacheDelPattern('blog:list:*'), cacheDel(`blog:post:${post.slug}`)]);
+
+    sendSuccess(res, null, 'Post deleted');
   } catch (error) {
     logger.error('Delete post error:', error);
-    res.status(500).json({ success: false, message: 'Failed to delete post.' });
+    sendError(res, 'Failed to delete post', 500);
   }
-}
+};

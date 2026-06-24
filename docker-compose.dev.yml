@@ -1,66 +1,29 @@
-version: "3.9"
+version: '3.9'
 
 services:
-  mongo:
-    image: mongo:7-jammy
-    container_name: ecatu_mongo_dev
+  mongodb:
+    image: mongo:7.0
+    container_name: mywebsite-mongo-dev
     restart: unless-stopped
-    environment:
-      MONGO_INITDB_DATABASE: ecatu_portfolio
-    volumes:
-      - mongo_dev_data:/data/db
     ports:
       - "27017:27017"
-    networks:
-      - portfolio_dev_net
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      target: builder
-    container_name: ecatu_backend_dev
-    restart: unless-stopped
-    command: npm run dev
-    environment:
-      NODE_ENV: development
-      PORT: 5000
-      MONGO_URI: mongodb://mongo:27017/ecatu_portfolio
-      JWT_SECRET: dev_secret_change_in_production
-      CORS_ORIGINS: http://localhost:3000
-    ports:
-      - "5000:5000"
-    depends_on:
-      - mongo
-    networks:
-      - portfolio_dev_net
     volumes:
-      - ./backend/src:/app/src:ro
-      - backend_dev_logs:/app/logs
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      target: builder
-    container_name: ecatu_frontend_dev
-    restart: unless-stopped
-    command: npm run dev -- --host
-    environment:
-      VITE_API_URL: http://localhost:5000
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
+      - mongo_dev_data:/data/db
     networks:
-      - portfolio_dev_net
-    volumes:
-      - ./frontend/src:/app/src:ro
+      - dev-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: mywebsite-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - dev-network
 
 volumes:
   mongo_dev_data:
-  backend_dev_logs:
 
 networks:
-  portfolio_dev_net:
+  dev-network:
     driver: bridge

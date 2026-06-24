@@ -1,36 +1,45 @@
-# ─── Environment ──────────────────────────────────────────────────────────────
+# Environment
 .env
 .env.local
 .env.*.local
 !.env.example
 
-# ─── Node / NPM ───────────────────────────────────────────────────────────────
+# Dependencies
 node_modules/
+.npm
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# ─── Build outputs ────────────────────────────────────────────────────────────
+# Build outputs
 dist/
 build/
 out/
+*.tsbuildinfo
 
-# ─── Logs ─────────────────────────────────────────────────────────────────────
+# Logs
 logs/
 *.log
 
-# ─── OS ───────────────────────────────────────────────────────────────────────
+# Runtime
+tmp/
+pids/
+*.pid
+
+# OS
 .DS_Store
 Thumbs.db
 
-# ─── IDEs ─────────────────────────────────────────────────────────────────────
+# IDE
 .vscode/
+.vscode/settings.json
 .idea/
 *.swp
 *.swo
 
-# ─── Docker volumes ───────────────────────────────────────────────────────────
-mongo_data/
+# Testing
+coverage/
 
-# ─── TypeScript cache ─────────────────────────────────────────────────────────
-*.tsbuildinfo
+# Docker volumes
+mongo_data/
+redis_data/

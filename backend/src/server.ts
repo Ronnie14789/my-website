@@ -10,21 +10,21 @@ async function startServer(): Promise<void> {
     await connectDatabase();
 
     const server = app.listen(PORT, () => {
-      logger.info(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV ?? 'development'} mode`);
-      logger.info(`📚 API Docs: http://localhost:${PORT}/api/docs`);
+      logger.info(`Server running on port ${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV ?? 'development'}`);
+      logger.info(`API docs: http://localhost:${PORT}/api/docs`);
     });
 
-    // Graceful shutdown
     const shutdown = (signal: string) => {
-      logger.info(`${signal} received – shutting down gracefully`);
+      logger.info(`${signal} received. Shutting down gracefully...`);
       server.close(() => {
         logger.info('HTTP server closed');
         process.exit(0);
       });
       setTimeout(() => {
-        logger.error('Forced shutdown');
+        logger.error('Force shutdown after timeout');
         process.exit(1);
-      }, 10_000);
+      }, 30_000);
     };
 
     process.on('SIGTERM', () => shutdown('SIGTERM'));
@@ -35,4 +35,4 @@ async function startServer(): Promise<void> {
   }
 }
 
-startServer();
+void startServer();
