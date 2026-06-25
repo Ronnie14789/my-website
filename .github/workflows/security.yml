@@ -41,6 +41,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: TruffleHog Secret Scanning
+        if: ${{ github.event_name != 'push' || github.event.before != github.sha }}
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
