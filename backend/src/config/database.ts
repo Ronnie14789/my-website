@@ -2,7 +2,12 @@ import mongoose from 'mongoose';
 import { logger } from '../utils/logger';
 
 const connectDB = async (): Promise<void> => {
-  const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mywebsite';
+  const mongoURI = process.env.MONGODB_URI;
+
+  if (!mongoURI) {
+    logger.error('MONGODB_URI environment variable is missing');
+    process.exit(1);
+  }
 
   try {
     await mongoose.connect(mongoURI, {
@@ -10,6 +15,7 @@ const connectDB = async (): Promise<void> => {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
+
     logger.info('MongoDB connected successfully');
   } catch (error) {
     logger.error('MongoDB connection failed:', error);
@@ -21,7 +27,7 @@ const connectDB = async (): Promise<void> => {
   });
 
   mongoose.connection.on('disconnected', () => {
-    logger.warn('MongoDB disconnected. Attempting to reconnect...');
+    logger.warn('MongoDB disconnected');
   });
 
   mongoose.connection.on('reconnected', () => {
