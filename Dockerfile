@@ -1,6 +1,9 @@
-# =========================
-# Frontend Build Stage
-# =========================
+=========================
+
+Frontend Build Stage
+
+=========================
+
 FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app/frontend
@@ -11,25 +14,33 @@ RUN npm ci --legacy-peer-deps
 COPY frontend/ .
 RUN npm run build
 
-# =========================
-# Backend Build Stage
-# =========================
+=========================
+
+Backend Build Stage
+
+=========================
+
 FROM node:18-alpine AS backend-builder
 
 WORKDIR /app/backend
 
 COPY backend/package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 COPY backend/ .
 RUN npm run build
 
-# =========================
-# Production Stage
-# =========================
+=========================
+
+Production Stage
+
+=========================
+
 FROM node:18-alpine
 
 WORKDIR /app
+
+ENV NODE_ENV=production
 
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 COPY --from=backend-builder /app/backend/dist ./backend/dist
