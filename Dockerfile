@@ -1,21 +1,34 @@
-# Frontend build
+# =========================
+# Frontend Build Stage
+# =========================
 FROM node:18-alpine AS frontend-builder
+
 WORKDIR /app/frontend
+
 COPY frontend/package*.json ./
 RUN npm ci --legacy-peer-deps
+
 COPY frontend/ .
 RUN npm run build
 
-# Backend build
+# =========================
+# Backend Build Stage
+# =========================
 FROM node:18-alpine AS backend-builder
+
 WORKDIR /app/backend
+
 COPY backend/package*.json ./
 RUN npm ci
+
 COPY backend/ .
 RUN npm run build
 
-# Production
+# =========================
+# Production Stage
+# =========================
 FROM node:18-alpine
+
 WORKDIR /app
 
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
@@ -25,4 +38,4 @@ COPY backend/package*.json ./backend/
 
 EXPOSE 3001
 
-CMD ["node", "backend/dist/index.js"]
+CMD ["node", "backend/dist/server.js"]
