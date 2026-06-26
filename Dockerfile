@@ -1,52 +1,23 @@
-=========================
+# syntax=docker/dockerfile:1
 
-Frontend Build Stage
-
-=========================
-
-FROM node:18-alpine AS frontend-builder
-
-WORKDIR /app/frontend
-
-COPY frontend/package*.json ./
-RUN npm ci --legacy-peer-deps
-
-COPY frontend/ .
-RUN npm run build
-
-=========================
-
-Backend Build Stage
-
-=========================
-
-FROM node:18-alpine AS backend-builder
-
-WORKDIR /app/backend
-
-COPY backend/package*.json ./
-RUN npm ci --legacy-peer-deps
-
-COPY backend/ .
-RUN npm run build
-
-=========================
-
-Production Stage
-
-=========================
-
-FROM node:18-alpine
-
+FROM node:20-alpine
 WORKDIR /app
 
-ENV NODE_ENV=production
-
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
-COPY --from=backend-builder /app/backend/dist ./backend/dist
-COPY --from=backend-builder /app/backend/node_modules ./backend/node_modules
+# Install backend dependencies
 COPY backend/package*.json ./backend/
+WORKDIR /app/backend
+RUN npm ci
 
-EXPOSE 3001
+# Copy backend source
+WORKDIR /app
+COPY backend ./backend
 
-CMD ["node", "backend/dist/server.js"]
+# Build backend
+WORKDIR /app/backend
+RUN npm run build
+
+ENV NODE_ENV=production
+ENV PORT=10000
+EXPOSE 10000
+
+CMD ["npm", "start"]
