@@ -3,10 +3,10 @@
 FROM node:20-alpine
 WORKDIR /app
 
-# Install backend dependencies
+# Install backend dependencies (fallback: npm install)
 COPY backend/package*.json ./backend/
 WORKDIR /app/backend
-RUN npm ci
+RUN npm install
 
 # Copy backend source
 WORKDIR /app
