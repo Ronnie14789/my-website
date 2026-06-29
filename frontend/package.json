@@ -26,7 +26,7 @@
     "@types/node": "^26.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@types/recharts": "^1.8.29",
+    "@types/recharts": "^2.0.1",
     "@vitejs/plugin-react": "^6.0.2",
     "autoprefixer": "^10.5.1",
     "postcss": "^8.4.49",
